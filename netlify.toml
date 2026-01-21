@@ -1,0 +1,7 @@
+[build]
+  functions = 'netlify/functions'
+  publish = '.'
+
+[[scheduled_functions]]
+  function = 'daily-ping'
+  cron = '0 9 * * *'
