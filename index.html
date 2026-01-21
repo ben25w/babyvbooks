@@ -1,0 +1,82 @@
+<!doctype html>
+<meta charset='utf-8'>
+<title>Baby Violet's Books</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<style>
+  body { font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; background: #f3f0f7; }
+  h1 { color: #6b3fa0; text-align: center; }
+  p { color: #6b3fa0; }
+  input { padding: 10px; width: 70%; font-size: 16px; border: 2px solid #6b3fa0; border-radius: 4px; }
+  button { padding: 10px 20px; font-size: 16px; background: #6b3fa0; color: white; border: none; cursor: pointer; border-radius: 4px; }
+  button:hover { background: #5a2f88; }
+  #bookList { margin-top: 30px; }
+  .book-item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 4px; border-left: 5px solid #6b3fa0; box-shadow: 0 2px 4px rgba(107, 63, 160, 0.1); }
+  .book-item p { margin: 0; font-size: 18px; color: #333; }
+</style>
+
+<h1>💜 Baby Violet's Books</h1>
+<p>Add a new book below:</p>
+
+<input type='text' id='bookInput' placeholder='Enter book name...' />
+<button onclick='addBook()'>Add Book</button>
+
+<div id='bookList'></div>
+
+<script>
+  const SUPABASE_URL = 'https://fxgkdefqdnedadjvdhiy.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4Z2tkZWZxZG5lZGFkanZkaGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5ODA4NzcsImV4cCI6MjA4NDU1Njg3N30.rEnRU1rgEh_f0Rub9scyfN3ieb90kBSgLEkaXPhylmA';
+
+  async function loadBooks() {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/books?order=created_at.desc`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    const books = await response.json();
+    displayBooks(books);
+  }
+
+  function displayBooks(books) {
+    const list = document.getElementById('bookList');
+    if (books.length === 0) {
+      list.innerHTML = '<p>No books yet. Add one to get started!</p>';
+      return;
+    }
+    list.innerHTML = books.map(book => `
+      <div class='book-item'>
+        <p>${book.name}</p>
+      </div>
+    `).join('');
+  }
+
+  async function addBook() {
+    const input = document.getElementById('bookInput');
+    const bookName = input.value.trim();
+    
+    if (!bookName) {
+      alert('Please enter a book name');
+      return;
+    }
+
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/books`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: bookName })
+    });
+
+    if (response.ok) {
+      input.value = '';
+      loadBooks();
+    } else {
+      alert('Error adding book. Check your Supabase details.');
+    }
+  }
+
+  // Load books when page opens
+  loadBooks();
+</script>
