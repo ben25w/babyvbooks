@@ -3,36 +3,19 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 exports.handler = async () => {
   try {
-    // Add a dummy book
-    const addResponse = await fetch(`${SUPABASE_URL}/rest/v1/books`, {
-      method: 'POST',
+    // Just do a read operation to keep Supabase awake
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/books?limit=1`, {
       headers: {
         'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ name: '🔔 Keep-alive ping' })
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
     });
 
-    if (!addResponse.ok) {
-      return { statusCode: 500, body: 'Failed to add ping' };
+    if (response.ok) {
+      return { statusCode: 200, body: 'Keep-alive ping successful' };
+    } else {
+      return { statusCode: 500, body: 'Ping failed' };
     }
-
-    // Wait a moment, then delete it
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const deleteResponse = await fetch(
-      `${SUPABASE_URL}/rest/v1/books?name=eq.🔔 Keep-alive ping`,
-      {
-        method: 'DELETE',
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`
-        }
-      }
-    );
-
-    return { statusCode: 200, body: 'Ping successful' };
   } catch (error) {
     return { statusCode: 500, body: `Error: ${error.message}` };
   }
