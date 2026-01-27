@@ -5,14 +5,20 @@
 <style>
   body { font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; background: #f3f0f7; }
   h1 { color: #6b3fa0; text-align: center; }
-  .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+  .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
   .control-group { display: flex; gap: 8px; }
   input[type='text'] { padding: 10px; font-size: 16px; border: 2px solid #6b3fa0; border-radius: 4px; }
   #bookInput { width: 70%; }
   #searchInput { width: 70%; }
+  textarea { padding: 10px; font-size: 14px; border: 2px solid #6b3fa0; border-radius: 4px; width: 100%; font-family: Arial; min-height: 120px; }
   button { padding: 10px 20px; font-size: 16px; background: #6b3fa0; color: white; border: none; cursor: pointer; border-radius: 4px; }
   button:hover { background: #5a2f88; }
   .icon-button { padding: 10px 15px; font-size: 18px; }
+  .bulk-section { background: white; padding: 15px; border-radius: 4px; margin-bottom: 20px; border: 2px solid #6b3fa0; }
+  .bulk-section h3 { margin-top: 0; color: #6b3fa0; }
+  #bulkBooksTextarea { display: none; }
+  .bulk-buttons { display: none; gap: 10px; margin-top: 10px; }
+  .bulk-buttons.show { display: flex; }
   #bookList { margin-top: 30px; }
   .book-item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 4px; border-left: 5px solid #6b3fa0; box-shadow: 0 2px 4px rgba(107, 63, 160, 0.1); display: flex; justify-content: space-between; align-items: center; }
   .book-item p { margin: 0; font-size: 18px; color: #333; flex: 1; }
@@ -31,7 +37,20 @@
     <button onclick='addBook()'>Add Book</button>
   </div>
   <button class='icon-button' title='Search' onclick='toggleSearch()'>🔍</button>
+  <button class='icon-button' title='Bulk Add' onclick='toggleBulkMode()'>📝</button>
   <button class='icon-button' title='Delete Mode' onclick='toggleDeleteMode()'>🗑️</button>
+</div>
+
+<div id='bulkSection' class='bulk-section' style='display: none;'>
+  <h3>Bulk Add Books</h3>
+  <p>Paste or type book names below (one per line):</p>
+  <textarea id='bulkBooksTextarea' placeholder='The Very Hungry Caterpillar
+Winnie the Pooh
+Charlotte\'s Web'></textarea>
+  <div class='bulk-buttons'>
+    <button onclick='addBulkBooks()'>Add All Books</button>
+    <button onclick='toggleBulkMode()' style='background: #999;'>Cancel</button>
+  </div>
 </div>
 
 <div id='searchSection' style='display: none; margin-bottom: 20px;'>
@@ -100,6 +119,79 @@
     }
   }
 
+  function toggleBulkMode() {
+    const bulkSection = document.getElementById('bulkSection');
+    const bulkButtons = document.querySelector('.bulk-buttons');
+    const isHidden = bulkSection.style.display === 'none';
+    
+    if (isHidden) {
+      bulkSection.style.display = 'block';
+      bulkButtons.classList.add('show');
+      document.getElementById('bulkBooksTextarea').focus();
+    } else {
+      bulkSection.style.display = 'none';
+      bulkButtons.classList.remove('show');
+      document.getElementById('bulkBooksTextarea').value = '';
+    }
+  }
+
+  async function addBulkBooks() {
+    const textarea = document.getElementById('bulkBooksTextarea');
+    const text = textarea.value;
+    
+    if (!text.trim()) {
+      alert('Please enter at least one book name');
+      return;
+    }
+
+    // Split by newlines and clean up
+    const bookNames = text
+      .split('\n')
+      .map(name => name.trim())
+      .filter(name => name.length > 0);
+
+    if (bookNames.length === 0) {
+      alert('Please enter at least one book name');
+      return;
+    }
+
+    let added = 0;
+    let skipped = 0;
+
+    for (const bookName of bookNames) {
+      // Check if already exists
+      const duplicate = allBooks.some(b => b.name.toLowerCase() === bookName.toLowerCase());
+      if (duplicate) {
+        skipped++;
+        continue;
+      }
+
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/books`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: bookName })
+      });
+
+      if (response.ok) {
+        added++;
+      }
+    }
+
+    let message = `Added ${added} book${added !== 1 ? 's' : ''}`;
+    if (skipped > 0) {
+      message += ` (${skipped} already in list)`;
+    }
+    alert(message);
+
+    textarea.value = '';
+    toggleBulkMode();
+    loadBooks();
+  }
+
   function searchBooks() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const results = allBooks.filter(b => 
@@ -134,7 +226,6 @@
       return;
     }
 
-    // Check if book already exists
     const duplicate = allBooks.some(b => b.name.toLowerCase() === bookName.toLowerCase());
     if (duplicate) {
       alert('You already have this book!');
