@@ -4,6 +4,22 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 let allBooks = [];
 let deleteMode = false;
 
+// Color gradient presets
+const gradientThemes = [
+  'linear-gradient(135deg, #8b4fb3 0%, #d994e6 50%, #f8d5f0 100%)', // Original: Purple → Pink → White
+  'linear-gradient(135deg, #6b2d9f 0%, #e91e63 50%, #fce4ec 100%)', // Berry: Deep Purple → Magenta → Light Pink
+  'linear-gradient(135deg, #ff1493 0%, #8b4fb3 50%, #f5f5f5 100%)', // Blossom: Hot Pink → Purple → White
+  'linear-gradient(135deg, #dda0dd 0%, #ffb6d9 50%, #ffffff 100%)', // Lavender: Light Purple → Pastel Pink → White
+  'linear-gradient(135deg, #4a148c 0%, #ff69b4 50%, #fff9e6 100%)',  // Twilight: Dark Purple → Rose → Cream
+  'linear-gradient(135deg, #9c27b0 0%, #f48fb1 50%, #fce4ec 100%)'   // Orchid: Purple → Light Pink → Very Light Pink
+];
+
+function applyRandomGradient() {
+  const randomIndex = Math.floor(Math.random() * gradientThemes.length);
+  const selectedGradient = gradientThemes[randomIndex];
+  document.body.style.background = selectedGradient;
+}
+
 async function loadBooks() {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/books?order=name.asc`, {
     headers: {
@@ -203,4 +219,6 @@ async function deleteBook(id) {
   }
 }
 
+// Apply random gradient on page load
+applyRandomGradient();
 loadBooks();
