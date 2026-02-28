@@ -2,70 +2,259 @@
 <meta charset='utf-8'>
 <title>Baby Violet's Books</title>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
+<link href='https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap' rel='stylesheet'>
 <style>
-  body { font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; background: #f3f0f7; }
-  h1 { color: #6b3fa0; text-align: center; }
-  .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-  .control-group { display: flex; gap: 8px; }
-  input[type='text'] { padding: 10px; font-size: 16px; border: 2px solid #6b3fa0; border-radius: 4px; }
-  #bookInput { width: 70%; }
-  #searchInput { width: 70%; }
-    body { font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; background: #f3f0f7; }
-  h1 { color: #6b3fa0; text-align: center; }
-  .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-  .control-group { display: flex; gap: 8px; }
-  input[type='text'] { padding: 10px; font-size: 16px; border: 2px solid #6b3fa0; border-radius: 4px; }
-  #bookInput { width: 70%; }
-  #searchInput { width: 70%; }
-  textarea { padding: 10px; font-size: 14px; border: 2px solid #6b3fa0; border-radius: 4px; width: 100%; font-family: Arial; min-height: 120px; }
-  button { padding: 10px 20px; font-size: 16px; background: #6b3fa0; color: white; border: none; cursor: pointer; border-radius: 4px; }
-  button:hover { background: #5a2f88; }
-  .icon-button { padding: 10px 15px; font-size: 18px; }
-  .bulk-section { background: white; padding: 15px; border-radius: 4px; margin-bottom: 20px; border: 2px solid #6b3fa0; }
-  .bulk-section h3 { margin-top: 0; color: #6b3fa0; }
-  .bulk-buttons { display: none; gap: 10px; margin-top: 10px; }
-  .bulk-buttons.show { display: flex; }
-  #bookList { margin-top: 30px; }
-  .book-item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 4px; border-left: 5px solid #6b3fa0; box-shadow: 0 2px 4px rgba(107, 63, 160, 0.1); display: flex; justify-content: space-between; align-items: center; }
-  .book-item p { margin: 0; font-size: 18px; color: #333; flex: 1; }
-  .delete-btn { background: #d9534f; padding: 8px 12px; font-size: 14px; margin-left: 10px; }
-  .delete-btn:hover { background: #c9302c; }
-  .search-results { margin-top: 30px; }
-  .search-title { color: #6b3fa0; font-weight: bold; margin-bottom: 10px; }
-  .empty-message { color: #999; font-style: italic; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body { 
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #8b4fb3 0%, #d994e6 50%, #f8d5f0 100%);
+    min-height: 100vh;
+    padding: 30px 20px;
+  }
+  
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  h1 { 
+    color: #fff;
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 40px;
+    text-shadow: 0 4px 15px rgba(107, 63, 160, 0.3);
+    font-weight: 700;
+  }
+
+  .controls { 
+    display: flex; 
+    gap: 12px; 
+    margin-bottom: 25px; 
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  
+  .control-group { 
+    display: flex; 
+    gap: 10px;
+    flex: 1;
+    min-width: 250px;
+  }
+  
+  input[type='text'] { 
+    padding: 12px 16px; 
+    font-size: 16px; 
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  input[type='text']:focus {
+    outline: none;
+    background: white;
+    box-shadow: 0 6px 20px rgba(139, 79, 179, 0.3);
+  }
+  
+  #bookInput { 
+    flex: 1;
+    min-width: 150px;
+  }
+  
+  #searchInput { 
+    width: 100%;
+  }
+  
+  textarea { 
+    padding: 14px;
+    font-size: 14px;
+    border: none;
+    border-radius: 12px;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+    min-height: 140px;
+    background: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    resize: vertical;
+  }
+  
+  textarea:focus {
+    outline: none;
+    background: white;
+    box-shadow: 0 6px 20px rgba(139, 79, 179, 0.3);
+  }
+  
+  button { 
+    padding: 12px 20px; 
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #8b4fb3 0%, #b565d8 100%);
+    color: white; 
+    border: none; 
+    cursor: pointer; 
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(139, 79, 179, 0.3);
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  button:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 79, 179, 0.4);
+  }
+  
+  button:active {
+    transform: translateY(0);
+  }
+  
+  .icon-button { 
+    padding: 12px 14px; 
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #8b4fb3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .icon-button:hover {
+    background: white;
+  }
+  
+  .bulk-section { 
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    border: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(10px);
+  }
+  
+  .bulk-section h3 { 
+    margin: 0 0 12px 0;
+    color: #8b4fb3;
+    font-size: 1.3em;
+    font-weight: 700;
+  }
+  
+  .bulk-section p {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 0.95em;
+  }
+  
+  .bulk-buttons { 
+    display: none; 
+    gap: 12px; 
+    margin-top: 15px;
+  }
+  
+  .bulk-buttons.show { 
+    display: flex;
+  }
+  
+  #bookList { 
+    margin-top: 30px;
+  }
+  
+  .book-item { 
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 213, 240, 0.5) 100%);
+    padding: 18px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+  
+  .book-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(139, 79, 179, 0.2);
+  }
+  
+  .book-item p { 
+    margin: 0; 
+    font-size: 18px; 
+    color: #333;
+    flex: 1;
+    font-weight: 500;
+  }
+  
+  .delete-btn { 
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    padding: 8px 14px; 
+    font-size: 13px;
+    font-weight: 600;
+    margin-left: 12px;
+    box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
+  }
+  
+  .delete-btn:hover { 
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+  }
+  
+  .search-results { 
+    margin-top: 20px;
+  }
+  
+  .search-title { 
+    color: #8b4fb3;
+    font-weight: 700;
+    margin-bottom: 12px;
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .empty-message { 
+    color: #999; 
+    font-style: italic;
+    padding: 20px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+  }
 
 </style>
 
-<h1>💜 Baby Violet's Books</h1>
+<div class='container'>
+  <h1>💜 Baby Violet's Books</h1>
 
-<div class='controls'>
-  <div class='control-group'>
-    <input type='text' id='bookInput' placeholder='Enter book name...' />
-    <button onclick='addBook()'>Add Book</button>
+  <div class='controls'>
+    <div class='control-group'>
+      <input type='text' id='bookInput' placeholder='Enter book name...' />
+      <button onclick='addBook()'>Add Book</button>
+    </div>
+    <button class='icon-button' title='Search' onclick='toggleSearch()'>🔍</button>
+    <button class='icon-button' title='Bulk Add' onclick='toggleBulkMode()'>📝</button>
+    <button class='icon-button' title='Delete Mode' onclick='toggleDeleteMode()'>🗑️</button>
   </div>
-  <button class='icon-button' title='Search' onclick='toggleSearch()'>🔍</button>
-  <button class='icon-button' title='Bulk Add' onclick='toggleBulkMode()'>📝</button>
-  <button class='icon-button' title='Delete Mode' onclick='toggleDeleteMode()'>🗑️</button>
-</div>
 
-<div id='bulkSection' class='bulk-section' style='display: none;'>
-  <h3>Bulk Add Books</h3>
-  <p>Paste or type book names below (one per line):</p>
-  <textarea id='bulkBooksTextarea' placeholder='The Very Hungry Caterpillar
+  <div id='bulkSection' class='bulk-section' style='display: none;'>
+    <h3>Bulk Add Books</h3>
+    <p>Paste or type book names below (one per line):</p>
+    <textarea id='bulkBooksTextarea' placeholder='The Very Hungry Caterpillar
 Winnie the Pooh
-Charlotte\'s Web'></textarea>
-  <div class='bulk-buttons'>
-    <button onclick='addBulkBooks()'>Add All Books</button>
-    <button onclick='toggleBulkMode()' style='background: #999;'>Cancel</button>
+Charlotte's Web'></textarea>
+    <div class='bulk-buttons'>
+      <button onclick='addBulkBooks()'>Add All Books</button>
+      <button onclick='toggleBulkMode()' style='background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);'>Cancel</button>
+    </div>
   </div>
-</div>
 
-<div id='searchSection' style='display: none; margin-bottom: 20px;'>
-  <input type='text' id='searchInput' placeholder='Search books...' onkeyup='searchBooks()' />
-  <div id='searchResults' class='search-results'></div>
-</div>
+  <div id='searchSection' style='display: none; margin-bottom: 20px;'>
+    <input type='text' id='searchInput' placeholder='Search books...' onkeyup='searchBooks()' />
+    <div id='searchResults' class='search-results'></div>
+  </div>
 
-<div id='bookList'></div>
+  <div id='bookList'></div>
+</div>
 
 <script>
   const SUPABASE_URL = 'https://fxgkdefqdnedadjvdhiy.supabase.co';
@@ -88,10 +277,7 @@ Charlotte\'s Web'></textarea>
   function displayBooks() {
     const list = document.getElementById('bookList');
     
-    // Filter out the keep-alive ping book
     const displayBooks = allBooks.filter(b => !b.name.includes('Keep-alive'));
-    
-    // Sort A-Z
     displayBooks.sort((a, b) => a.name.localeCompare(b.name));
 
     if (displayBooks.length === 0) {
@@ -151,7 +337,6 @@ Charlotte\'s Web'></textarea>
       return;
     }
 
-    // Split by newlines and clean up
     const bookNames = text
       .split('\n')
       .map(name => name.trim())
@@ -166,7 +351,6 @@ Charlotte\'s Web'></textarea>
     let skipped = 0;
 
     for (const bookName of bookNames) {
-      // Check if already exists
       const duplicate = allBooks.some(b => b.name.toLowerCase() === bookName.toLowerCase());
       if (duplicate) {
         skipped++;
@@ -278,6 +462,5 @@ Charlotte\'s Web'></textarea>
     }
   }
 
-  // Load books when page opens
   loadBooks();
 </script>
