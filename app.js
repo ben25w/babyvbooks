@@ -6,7 +6,7 @@ let allBooks = [];
 let deleteMode = false;
 let sortBy = 'name';
 let showDetails = true;
-let buyersList = ['Mum', 'Dad', 'Grandma', 'Grandpa', 'Auntie', 'Uncle'];
+let buyersList = [];
 
 // Color gradient presets
 const gradientThemes = [
@@ -30,6 +30,23 @@ function formatDate(dateString) {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+async function loadBuyers() {
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/buyers?order=name.asc`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    const data = await response.json();
+    buyersList = data.map(b => ({ id: b.id, name: b.name }));
+    updateBuyersDropdown();
+    updateBuyersDisplay();
+  } catch (error) {
+    console.error('Error loading buyers:', error);
+  }
+}
+
 function updateBuyersDropdown() {
   const dropdown = document.getElementById('boughtByDropdown');
   const currentValue = dropdown.value;
@@ -38,8 +55,8 @@ function updateBuyersDropdown() {
   
   buyersList.forEach(buyer => {
     const option = document.createElement('option');
-    option.value = buyer;
-    option.textContent = buyer;
+    option.value = buyer.name;
+    option.textContent = buyer.name;
     dropdown.appendChild(option);
   });
   
@@ -55,8 +72,8 @@ function updateBuyersDisplay() {
   const buyersList_elem = document.getElementById('buyersList');
   buyersList_elem.innerHTML = buyersList.map(buyer => `
     <div class='buyer-item'>
-      <span>${buyer}</span>
-      <button class='remove-btn' onclick='removeBuyer("${buyer}")'>✕</button>
+      <span>${buyer.name}</span>
+      <button class='remove-btn' onclick='removeBuyer(${buyer.id}, "${buyer.name}")'>✕</button>
     </div>
   `).join('');
 }
@@ -72,7 +89,7 @@ function unlockSettings() {
   }
 }
 
-function addBuyer() {
+async function addBuyer() {
   const input = document.getElementById('newBuyerInput');
   const name = input.value.trim();
   
@@ -81,25 +98,60 @@ function addBuyer() {
     return;
   }
   
-  if (buyersList.includes(name)) {
+  if (buyersList.some(b => b.name.toLowerCase() === name.toLowerCase())) {
     alert('This name already exists');
     input.value = '';
     return;
   }
   
-  buyersList.push(name);
-  input.value = '';
-  updateBuyersDropdown();
-  updateBuyersDisplay();
-  localStorage.setItem('buyersList', JSON.stringify(buyersList));
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/buyers`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: name })
+    });
+
+    if (response.ok) {
+      const newBuyer = await response.json();
+      buyersList.push({ id: newBuyer[0].id, name: newBuyer[0].name });
+      input.value = '';
+      updateBuyersDropdown();
+      updateBuyersDisplay();
+    } else {
+      alert('Error adding buyer');
+    }
+  } catch (error) {
+    console.error('Error adding buyer:', error);
+    alert('Error adding buyer');
+  }
 }
 
-function removeBuyer(name) {
+async function removeBuyer(id, name) {
   if (confirm(`Remove "${name}" from the list?`)) {
-    buyersList = buyersList.filter(b => b !== name);
-    updateBuyersDropdown();
-    updateBuyersDisplay();
-    localStorage.setItem('buyersList', JSON.stringify(buyersList));
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/buyers?id=eq.${id}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      });
+
+      if (response.ok) {
+        buyersList = buyersList.filter(b => b.id !== id);
+        updateBuyersDropdown();
+        updateBuyersDisplay();
+      } else {
+        alert('Error removing buyer');
+      }
+    } catch (error) {
+      console.error('Error removing buyer:', error);
+      alert('Error removing buyer');
+    }
   }
 }
 
@@ -126,14 +178,18 @@ function toggleDetails() {
 }
 
 async function loadBooks() {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/books?order=name.asc`, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`
-    }
-  });
-  allBooks = await response.json();
-  displayBooks();
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/books?order=name.asc`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    allBooks = await response.json();
+    displayBooks();
+  } catch (error) {
+    console.error('Error loading books:', error);
+  }
 }
 
 function sortBooks(books) {
@@ -267,18 +323,22 @@ async function addBulkBooks() {
     }
 
     const today = new Date().toISOString().split('T')[0];
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/books`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ name: bookName, date_added: today })
-    });
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/books`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: bookName, date_added: today })
+      });
 
-    if (response.ok) {
-      added++;
+      if (response.ok) {
+        added++;
+      }
+    } catch (error) {
+      console.error('Error adding book:', error);
     }
   }
 
@@ -362,28 +422,33 @@ async function addBook() {
     }
   }
 
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/books`, {
-    method: 'POST',
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ 
-      name: bookName,
-      date_added: today,
-      bought_by: boughtBy
-    })
-  });
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/books`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        name: bookName,
+        date_added: today,
+        bought_by: boughtBy
+      })
+    });
 
-  if (response.ok) {
-    input.value = '';
-    document.getElementById('boughtByDropdown').value = '';
-    document.getElementById('customBoughtByInput').value = '';
-    document.getElementById('customBoughtByInput').style.display = 'none';
-    loadBooks();
-  } else {
-    alert('Error adding book. Check your Supabase details.');
+    if (response.ok) {
+      input.value = '';
+      document.getElementById('boughtByDropdown').value = '';
+      document.getElementById('customBoughtByInput').value = '';
+      document.getElementById('customBoughtByInput').style.display = 'none';
+      loadBooks();
+    } else {
+      alert('Error adding book. Check your Supabase details.');
+    }
+  } catch (error) {
+    console.error('Error adding book:', error);
+    alert('Error adding book');
   }
 }
 
@@ -392,31 +457,31 @@ async function deleteBook(id) {
     return;
   }
 
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/books?id=eq.${id}`, {
-    method: 'DELETE',
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`
-    }
-  });
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/books?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
 
-  if (response.ok) {
-    loadBooks();
-  } else {
+    if (response.ok) {
+      loadBooks();
+    } else {
+      alert('Error deleting book');
+    }
+  } catch (error) {
+    console.error('Error deleting book:', error);
     alert('Error deleting book');
   }
 }
 
 // Initialize
-function init() {
-  const saved = localStorage.getItem('buyersList');
-  if (saved) {
-    buyersList = JSON.parse(saved);
-  }
-  updateBuyersDropdown();
-  updateBuyersDisplay();
+async function init() {
   applyRandomGradient();
-  loadBooks();
+  await loadBuyers();
+  await loadBooks();
 }
 
 init();
