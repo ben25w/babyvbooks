@@ -212,14 +212,17 @@ button:active {
 }
 
 .bought-by-section {
+  width: 200px;
   background: rgba(255, 255, 255, 0.95);
   padding: 20px;
   border-radius: 16px;
-  margin-bottom: 20px;
   border: none;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   animation: slideDown 0.4s ease-out;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
 }
 
 .bought-by-section label {
@@ -271,6 +274,17 @@ button:active {
 
 #bookList { 
   margin-top: 30px;
+}
+
+.main-content {
+  display: flex;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.main-content #bookList {
+  flex: 1;
+  margin-top: 0;
 }
 
 .book-item { 
@@ -385,6 +399,15 @@ button:active {
   .action-buttons button {
     flex: 1 1 calc(50% - 5px);
     min-width: auto;
+  }
+
+  .main-content {
+    flex-direction: column;
+  }
+
+  .bought-by-section {
+    width: 100%;
+    position: static;
   }
 
   .book-item {

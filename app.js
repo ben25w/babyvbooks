@@ -116,21 +116,6 @@ function toggleBulkMode() {
   }
 }
 
-function toggleBoughtBySection() {
-  const section = document.getElementById('boughtBySection');
-  const isHidden = section.style.display === 'none';
-  
-  if (isHidden) {
-    section.style.display = 'block';
-    document.getElementById('boughtByDropdown').focus();
-  } else {
-    section.style.display = 'none';
-    document.getElementById('boughtByDropdown').value = '';
-    document.getElementById('customBoughtByInput').value = '';
-    document.getElementById('customBoughtByInput').style.display = 'none';
-  }
-}
-
 function handleBoughtByChange() {
   const dropdown = document.getElementById('boughtByDropdown');
   const customInput = document.getElementById('customBoughtByInput');
@@ -274,13 +259,9 @@ async function addBook() {
 
   if (response.ok) {
     input.value = '';
-    const boughtBySection = document.getElementById('boughtBySection');
-    if (boughtBySection) {
-      boughtBySection.style.display = 'none';
-      document.getElementById('boughtByDropdown').value = '';
-      document.getElementById('customBoughtByInput').value = '';
-      document.getElementById('customBoughtByInput').style.display = 'none';
-    }
+    document.getElementById('boughtByDropdown').value = '';
+    document.getElementById('customBoughtByInput').value = '';
+    document.getElementById('customBoughtByInput').style.display = 'none';
     loadBooks();
   } else {
     alert('Error adding book. Check your Supabase details.');
