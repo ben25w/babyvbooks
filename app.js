@@ -5,6 +5,7 @@ const SETTINGS_PASSWORD = 'blacktap';
 let allBooks = [];
 let deleteMode = false;
 let sortBy = 'name';
+let showDetails = true;
 let buyersList = ['Mum', 'Dad', 'Grandma', 'Grandpa', 'Auntie', 'Uncle'];
 
 // Color gradient presets
@@ -108,13 +109,20 @@ function toggleSettings() {
   
   if (isHidden) {
     settingsSection.style.display = 'block';
-    document.querySelector('.settings-password').style.display = 'block';
+    document.querySelector('.settings-password').style.display = 'flex';
     document.getElementById('settingsContent').style.display = 'none';
     document.getElementById('settingsPassword').value = '';
     document.getElementById('settingsPassword').focus();
   } else {
     settingsSection.style.display = 'none';
   }
+}
+
+function toggleDetails() {
+  showDetails = !showDetails;
+  const detailsBtn = document.getElementById('detailsBtn');
+  detailsBtn.textContent = showDetails ? '👁️ Hide Details' : '👁️ Show Details';
+  displayBooks();
 }
 
 async function loadBooks() {
@@ -133,8 +141,8 @@ function sortBooks(books) {
   
   if (sortBy === 'date') {
     return displayBooks.sort((a, b) => {
-      const dateA = new Date(a.date_added || '');
-      const dateB = new Date(b.date_added || '');
+      const dateA = new Date(a.date_added || '1900-01-01');
+      const dateB = new Date(b.date_added || '1900-01-01');
       return dateB - dateA;
     });
   }
@@ -151,16 +159,27 @@ function displayBooks() {
     return;
   }
 
-  list.innerHTML = displayBooks.map(book => `
-    <div class='book-item'>
-      <div class='book-details'>
-        <p class='book-name'>${book.name}</p>
-        <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
-        <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
+  if (showDetails) {
+    list.innerHTML = displayBooks.map(book => `
+      <div class='book-item'>
+        <div class='book-details'>
+          <p class='book-name'>${book.name}</p>
+          <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
+          <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
+        </div>
+        <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
       </div>
-      <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
-    </div>
-  `).join('');
+    `).join('');
+  } else {
+    list.innerHTML = displayBooks.map(book => `
+      <div class='book-item book-item-simple'>
+        <div class='book-details'>
+          <p class='book-name'>${book.name}</p>
+        </div>
+        <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
+      </div>
+    `).join('');
+  }
 }
 
 function toggleSortBy() {
@@ -291,16 +310,27 @@ function searchBooks() {
     return;
   }
 
-  resultsDiv.innerHTML = '<div class="search-title">Search Results:</div>' + results.map(book => `
-    <div class='book-item'>
-      <div class='book-details'>
-        <p class='book-name'>${book.name}</p>
-        <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
-        <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
+  if (showDetails) {
+    resultsDiv.innerHTML = '<div class="search-title">Search Results:</div>' + results.map(book => `
+      <div class='book-item'>
+        <div class='book-details'>
+          <p class='book-name'>${book.name}</p>
+          <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
+          <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
+        </div>
+        <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
       </div>
-      <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
-    </div>
-  `).join('');
+    `).join('');
+  } else {
+    resultsDiv.innerHTML = '<div class="search-title">Search Results:</div>' + results.map(book => `
+      <div class='book-item book-item-simple'>
+        <div class='book-details'>
+          <p class='book-name'>${book.name}</p>
+        </div>
+        <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
+      </div>
+    `).join('');
+  }
 }
 
 async function addBook() {

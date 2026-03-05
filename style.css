@@ -307,6 +307,11 @@ button:active {
   box-shadow: 0 10px 30px rgba(139, 79, 179, 0.2);
 }
 
+.book-item-simple {
+  align-items: center;
+  padding: 15px 20px;
+}
+
 .book-details {
   flex: 1;
   display: flex;
@@ -314,11 +319,19 @@ button:active {
   gap: 6px;
 }
 
+.book-item-simple .book-details {
+  gap: 0;
+}
+
 .book-name { 
   margin: 0;
   font-size: 18px; 
   color: #333;
   font-weight: 600;
+}
+
+.book-item-simple .book-name {
+  font-size: 16px;
 }
 
 .book-info {
