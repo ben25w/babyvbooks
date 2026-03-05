@@ -5,7 +5,7 @@ const SETTINGS_PASSWORD = 'blacktap';
 let allBooks = [];
 let deleteMode = false;
 let sortBy = 'name';
-let showDetails = true;
+let showDetails = false;
 let buyersList = [];
 
 // Color gradient presets
