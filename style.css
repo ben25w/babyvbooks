@@ -108,10 +108,12 @@ h1 {
   display: flex;
   gap: 10px;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .action-buttons button {
   flex: 1;
+  min-width: 120px;
 }
 
 input[type='text'] { 
@@ -127,6 +129,26 @@ input[type='text'] {
 }
 
 input[type='text']:focus {
+  outline: none;
+  background: white;
+  box-shadow: 0 8px 25px rgba(139, 79, 179, 0.25);
+}
+
+select {
+  padding: 12px 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  cursor: pointer;
+  color: #333;
+}
+
+select:focus {
   outline: none;
   background: white;
   box-shadow: 0 8px 25px rgba(139, 79, 179, 0.25);
@@ -187,6 +209,30 @@ button:active {
 
 .action-buttons button:hover {
   box-shadow: 0 8px 30px rgba(139, 79, 179, 0.5);
+}
+
+.bought-by-section {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  border: none;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  animation: slideDown 0.4s ease-out;
+}
+
+.bought-by-section label {
+  display: block;
+  color: #8b4fb3;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 0.95em;
+}
+
+.bought-by-section select,
+.bought-by-section input[type='text'] {
+  margin-bottom: 8px;
 }
 
 .bulk-section { 
@@ -253,11 +299,31 @@ button:active {
   box-shadow: 0 10px 30px rgba(139, 79, 179, 0.2);
 }
 
-.book-item p { 
-  margin: 0; 
+.book-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.book-name { 
+  margin: 0;
   font-size: 18px; 
   color: #333;
-  flex: 1;
+  font-weight: 500;
+}
+
+.book-date {
+  margin: 0;
+  font-size: 13px;
+  color: #888;
+  font-weight: 400;
+}
+
+.book-buyer {
+  margin: 0;
+  font-size: 13px;
+  color: #8b4fb3;
   font-weight: 500;
 }
 
@@ -268,6 +334,7 @@ button:active {
   font-weight: 600;
   margin-left: 12px;
   box-shadow: 0 3px 12px rgba(231, 76, 60, 0.3);
+  white-space: nowrap;
 }
 
 .delete-btn:hover { 
@@ -309,5 +376,25 @@ button:active {
 
   .banner {
     font-size: 1.4em;
+  }
+
+  .action-buttons {
+    flex-wrap: wrap;
+  }
+
+  .action-buttons button {
+    flex: 1 1 calc(50% - 5px);
+    min-width: auto;
+  }
+
+  .book-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .delete-btn {
+    margin-left: 0;
+    margin-top: 12px;
+    width: 100%;
   }
 }
