@@ -1,5 +1,6 @@
 const SUPABASE_URL = 'https://fxgkdefqdnedadjvdhiy.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4Z2tkZWZxZG5lZGFkanZkaGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5ODA4NzcsImV4cCI6MjA4NDU1Njg3N30.rEnRU1rgEh_f0Rub9scyfN3ieb90kBSgLEkaXPhylmA';
+const SETTINGS_PASSWORD = 'blacktap';
 
 let allBooks = [];
 let deleteMode = false;
@@ -23,7 +24,7 @@ function applyRandomGradient() {
 }
 
 function formatDate(dateString) {
-  if (!dateString) return '';
+  if (!dateString) return 'Not set';
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
@@ -59,6 +60,17 @@ function updateBuyersDisplay() {
   `).join('');
 }
 
+function unlockSettings() {
+  const password = document.getElementById('settingsPassword').value;
+  if (password === SETTINGS_PASSWORD) {
+    document.querySelector('.settings-password').style.display = 'none';
+    document.getElementById('settingsContent').style.display = 'block';
+  } else {
+    alert('Incorrect password');
+    document.getElementById('settingsPassword').value = '';
+  }
+}
+
 function addBuyer() {
   const input = document.getElementById('newBuyerInput');
   const name = input.value.trim();
@@ -90,6 +102,21 @@ function removeBuyer(name) {
   }
 }
 
+function toggleSettings() {
+  const settingsSection = document.getElementById('settingsSection');
+  const isHidden = settingsSection.style.display === 'none';
+  
+  if (isHidden) {
+    settingsSection.style.display = 'block';
+    document.querySelector('.settings-password').style.display = 'block';
+    document.getElementById('settingsContent').style.display = 'none';
+    document.getElementById('settingsPassword').value = '';
+    document.getElementById('settingsPassword').focus();
+  } else {
+    settingsSection.style.display = 'none';
+  }
+}
+
 async function loadBooks() {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/books?order=name.asc`, {
     headers: {
@@ -117,12 +144,10 @@ function sortBooks(books) {
 
 function displayBooks() {
   const list = document.getElementById('bookList');
-  const datesColumn = document.getElementById('datesColumn');
   const displayBooks = sortBooks(allBooks);
 
   if (displayBooks.length === 0) {
     list.innerHTML = '<p class="empty-message">No books yet. Add one to get started!</p>';
-    datesColumn.innerHTML = '';
     return;
   }
 
@@ -130,16 +155,10 @@ function displayBooks() {
     <div class='book-item'>
       <div class='book-details'>
         <p class='book-name'>${book.name}</p>
-        ${book.bought_by ? `<p class='book-buyer'>From: ${book.bought_by}</p>` : ''}
+        <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
+        <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
       </div>
       <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
-    </div>
-  `).join('');
-
-  datesColumn.innerHTML = '<div class="dates-header">📅 Dates</div>' + displayBooks.map(book => `
-    <div class='date-item'>
-      <p class='date-book-name'>${book.name}</p>
-      <p class='date-value'>${formatDate(book.date_added)}</p>
     </div>
   `).join('');
 }
@@ -276,7 +295,8 @@ function searchBooks() {
     <div class='book-item'>
       <div class='book-details'>
         <p class='book-name'>${book.name}</p>
-        ${book.bought_by ? `<p class='book-buyer'>From: ${book.bought_by}</p>` : ''}
+        <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
+        <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
       </div>
       <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
     </div>

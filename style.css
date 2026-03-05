@@ -9,7 +9,7 @@ body {
 }
 
 .container {
-  max-width: 900px;
+  max-width: 700px;
   margin: 0 auto;
 }
 
@@ -130,11 +130,7 @@ h4 {
   align-items: stretch;
 }
 
-.bought-by-inputs select {
-  flex: 1;
-  min-width: 0;
-}
-
+.bought-by-inputs select,
 .bought-by-inputs input[type='text'] {
   flex: 1;
   min-width: 0;
@@ -149,10 +145,10 @@ h4 {
 
 .action-buttons button {
   flex: 1;
-  min-width: 120px;
+  min-width: 100px;
 }
 
-input[type='text'] { 
+input[type='text'], input[type='password'] { 
   padding: 12px 16px; 
   font-size: 16px; 
   border: none;
@@ -164,7 +160,7 @@ input[type='text'] {
   flex: 1;
 }
 
-input[type='text']:focus {
+input[type='text']:focus, input[type='password']:focus {
   outline: none;
   background: white;
   box-shadow: 0 8px 25px rgba(139, 79, 179, 0.25);
@@ -280,41 +276,23 @@ button:active {
   display: flex;
 }
 
-.main-content {
-  display: flex;
-  gap: 30px;
-  margin-bottom: 40px;
-}
-
-.books-column {
-  flex: 1;
-}
-
-.dates-column {
-  width: 180px;
-}
-
-.dates-header {
-  font-weight: 700;
-  color: #8b4fb3;
-  font-size: 1em;
-  margin-bottom: 15px;
-  text-align: center;
-  padding: 10px;
+#bookList { 
+  margin-bottom: 30px;
 }
 
 .book-item { 
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 213, 240, 0.5) 100%);
-  padding: 18px;
+  padding: 20px;
   margin-bottom: 12px;
   border-radius: 12px;
   border: none;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   display: flex; 
   justify-content: space-between; 
-  align-items: center;
+  align-items: flex-start;
   transition: all 0.3s ease;
   animation: cascadeIn 0.5s ease-out backwards;
+  gap: 15px;
 }
 
 .book-item:nth-child(1) { animation-delay: 0.1s; }
@@ -333,53 +311,24 @@ button:active {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .book-name { 
   margin: 0;
   font-size: 18px; 
   color: #333;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-.book-buyer {
+.book-info {
   margin: 0;
-  font-size: 13px;
-  color: #8b4fb3;
-  font-weight: 500;
-}
-
-.date-item {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 213, 240, 0.5) 100%);
-  padding: 12px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  text-align: center;
-  animation: cascadeIn 0.5s ease-out backwards;
-}
-
-.date-item:nth-child(1) { animation-delay: 0.1s; }
-.date-item:nth-child(2) { animation-delay: 0.15s; }
-.date-item:nth-child(3) { animation-delay: 0.2s; }
-.date-item:nth-child(4) { animation-delay: 0.25s; }
-.date-item:nth-child(5) { animation-delay: 0.3s; }
-.date-item:nth-child(n+6) { animation-delay: 0.35s; }
-
-.date-book-name {
-  margin: 0;
-  font-size: 12px;
-  color: #666;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.date-value {
-  margin: 4px 0 0 0;
   font-size: 14px;
+  color: #666;
+  font-weight: 400;
+}
+
+.book-info strong {
   color: #8b4fb3;
   font-weight: 600;
 }
@@ -389,9 +338,9 @@ button:active {
   padding: 8px 14px; 
   font-size: 13px;
   font-weight: 600;
-  margin-left: 12px;
   box-shadow: 0 3px 12px rgba(231, 76, 60, 0.3);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .delete-btn:hover { 
@@ -436,9 +385,43 @@ button:active {
   animation: slideDown 0.5s ease-out;
 }
 
-.settings-content {
+.settings-password {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.settings-password label {
+  display: block;
+  color: #8b4fb3;
+  font-weight: 600;
+  line-height: 50px;
+  white-space: nowrap;
+}
+
+.settings-password input[type='password'] {
+  flex: 1;
+}
+
+.settings-password button {
+  padding: 12px 24px;
+  white-space: nowrap;
+}
+
+.close-settings {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 8px 12px;
+  font-size: 20px;
+  background: #e74c3c;
+  margin: 0;
+}
+
+.settings-inner {
   display: flex;
   gap: 40px;
+  position: relative;
 }
 
 .buyer-list {
@@ -491,6 +474,7 @@ button:active {
 
 .add-buyer-inputs button {
   padding: 12px 24px;
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
@@ -515,40 +499,27 @@ button:active {
     min-width: auto;
   }
 
-  .main-content {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .dates-column {
-    width: 100%;
-  }
-
   .book-item {
     flex-direction: column;
     align-items: flex-start;
   }
 
   .delete-btn {
-    margin-left: 0;
-    margin-top: 12px;
     width: 100%;
+    text-align: center;
   }
 
-  .bought-by-control {
-    order: 2;
-  }
-
-  .control-group {
-    order: 1;
-  }
-
-  .action-buttons {
-    order: 3;
-  }
-
-  .settings-content {
+  .settings-inner {
     flex-direction: column;
     gap: 20px;
+  }
+
+  .settings-password {
+    flex-direction: column;
+  }
+
+  .settings-password label {
+    line-height: auto;
+    margin-bottom: 5px;
   }
 }
