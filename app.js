@@ -3,21 +3,29 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 let allBooks = [];
 let deleteMode = false;
+let sortBy = 'name';
+const boughtByOptions = ['Mum', 'Dad', 'Grandma', 'Grandpa', 'Auntie', 'Uncle'];
 
 // Color gradient presets
 const gradientThemes = [
-  'linear-gradient(135deg, #8b4fb3 0%, #d994e6 50%, #f8d5f0 100%)', // Original: Purple → Pink → White
-  'linear-gradient(135deg, #6b2d9f 0%, #e91e63 50%, #fce4ec 100%)', // Berry: Deep Purple → Magenta → Light Pink
-  'linear-gradient(135deg, #ff1493 0%, #8b4fb3 50%, #f5f5f5 100%)', // Blossom: Hot Pink → Purple → White
-  'linear-gradient(135deg, #dda0dd 0%, #ffb6d9 50%, #ffffff 100%)', // Lavender: Light Purple → Pastel Pink → White
-  'linear-gradient(135deg, #4a148c 0%, #ff69b4 50%, #fff9e6 100%)',  // Twilight: Dark Purple → Rose → Cream
-  'linear-gradient(135deg, #9c27b0 0%, #f48fb1 50%, #fce4ec 100%)'   // Orchid: Purple → Light Pink → Very Light Pink
+  'linear-gradient(135deg, #8b4fb3 0%, #d994e6 50%, #f8d5f0 100%)',
+  'linear-gradient(135deg, #6b2d9f 0%, #e91e63 50%, #fce4ec 100%)',
+  'linear-gradient(135deg, #ff1493 0%, #8b4fb3 50%, #f5f5f5 100%)',
+  'linear-gradient(135deg, #dda0dd 0%, #ffb6d9 50%, #ffffff 100%)',
+  'linear-gradient(135deg, #4a148c 0%, #ff69b4 50%, #fff9e6 100%)',
+  'linear-gradient(135deg, #9c27b0 0%, #f48fb1 50%, #fce4ec 100%)'
 ];
 
 function applyRandomGradient() {
   const randomIndex = Math.floor(Math.random() * gradientThemes.length);
   const selectedGradient = gradientThemes[randomIndex];
   document.body.style.background = selectedGradient;
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 async function loadBooks() {
@@ -31,11 +39,23 @@ async function loadBooks() {
   displayBooks();
 }
 
+function sortBooks(books) {
+  const displayBooks = books.filter(b => !b.name.includes('Keep-alive'));
+  
+  if (sortBy === 'date') {
+    return displayBooks.sort((a, b) => {
+      const dateA = new Date(a.date_added || '');
+      const dateB = new Date(b.date_added || '');
+      return dateB - dateA;
+    });
+  }
+  
+  return displayBooks.sort((a, b) => a.name.localeCompare(b.name));
+}
+
 function displayBooks() {
   const list = document.getElementById('bookList');
-  
-  const displayBooks = allBooks.filter(b => !b.name.includes('Keep-alive'));
-  displayBooks.sort((a, b) => a.name.localeCompare(b.name));
+  const displayBooks = sortBooks(allBooks);
 
   if (displayBooks.length === 0) {
     list.innerHTML = '<p class="empty-message">No books yet. Add one to get started!</p>';
@@ -44,10 +64,21 @@ function displayBooks() {
 
   list.innerHTML = displayBooks.map(book => `
     <div class='book-item'>
-      <p>${book.name}</p>
+      <div class='book-details'>
+        <p class='book-name'>${book.name}</p>
+        ${book.date_added ? `<p class='book-date'>Added: ${formatDate(book.date_added)}</p>` : ''}
+        ${book.bought_by ? `<p class='book-buyer'>From: ${book.bought_by}</p>` : ''}
+      </div>
       <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
     </div>
   `).join('');
+}
+
+function toggleSortBy() {
+  sortBy = sortBy === 'name' ? 'date' : 'name';
+  const sortBtn = document.getElementById('sortBtn');
+  sortBtn.textContent = sortBy === 'date' ? '📅 Sort by Name' : '📅 Sort by Date';
+  displayBooks();
 }
 
 function toggleDeleteMode() {
@@ -85,6 +116,34 @@ function toggleBulkMode() {
   }
 }
 
+function toggleBoughtBySection() {
+  const section = document.getElementById('boughtBySection');
+  const isHidden = section.style.display === 'none';
+  
+  if (isHidden) {
+    section.style.display = 'block';
+    document.getElementById('boughtByDropdown').focus();
+  } else {
+    section.style.display = 'none';
+    document.getElementById('boughtByDropdown').value = '';
+    document.getElementById('customBoughtByInput').value = '';
+    document.getElementById('customBoughtByInput').style.display = 'none';
+  }
+}
+
+function handleBoughtByChange() {
+  const dropdown = document.getElementById('boughtByDropdown');
+  const customInput = document.getElementById('customBoughtByInput');
+  
+  if (dropdown.value === 'Other') {
+    customInput.style.display = 'block';
+    customInput.focus();
+  } else {
+    customInput.style.display = 'none';
+    customInput.value = '';
+  }
+}
+
 async function addBulkBooks() {
   const textarea = document.getElementById('bulkBooksTextarea');
   const text = textarea.value;
@@ -114,6 +173,7 @@ async function addBulkBooks() {
       continue;
     }
 
+    const today = new Date().toISOString().split('T')[0];
     const response = await fetch(`${SUPABASE_URL}/rest/v1/books`, {
       method: 'POST',
       headers: {
@@ -121,7 +181,7 @@ async function addBulkBooks() {
         'Authorization': `Bearer ${SUPABASE_KEY}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ name: bookName })
+      body: JSON.stringify({ name: bookName, date_added: today })
     });
 
     if (response.ok) {
@@ -159,7 +219,11 @@ function searchBooks() {
 
   resultsDiv.innerHTML = '<div class="search-title">Search Results:</div>' + results.map(book => `
     <div class='book-item'>
-      <p>${book.name}</p>
+      <div class='book-details'>
+        <p class='book-name'>${book.name}</p>
+        ${book.date_added ? `<p class='book-date'>Added: ${formatDate(book.date_added)}</p>` : ''}
+        ${book.bought_by ? `<p class='book-buyer'>From: ${book.bought_by}</p>` : ''}
+      </div>
       <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
     </div>
   `).join('');
@@ -181,6 +245,19 @@ async function addBook() {
     return;
   }
 
+  const today = new Date().toISOString().split('T')[0];
+  const dropdown = document.getElementById('boughtByDropdown');
+  const customInput = document.getElementById('customBoughtByInput');
+  
+  let boughtBy = null;
+  if (dropdown && dropdown.value) {
+    if (dropdown.value === 'Other' && customInput.value.trim()) {
+      boughtBy = customInput.value.trim();
+    } else if (dropdown.value !== 'Other') {
+      boughtBy = dropdown.value;
+    }
+  }
+
   const response = await fetch(`${SUPABASE_URL}/rest/v1/books`, {
     method: 'POST',
     headers: {
@@ -188,11 +265,22 @@ async function addBook() {
       'Authorization': `Bearer ${SUPABASE_KEY}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ name: bookName })
+    body: JSON.stringify({ 
+      name: bookName,
+      date_added: today,
+      bought_by: boughtBy
+    })
   });
 
   if (response.ok) {
     input.value = '';
+    const boughtBySection = document.getElementById('boughtBySection');
+    if (boughtBySection) {
+      boughtBySection.style.display = 'none';
+      document.getElementById('boughtByDropdown').value = '';
+      document.getElementById('customBoughtByInput').value = '';
+      document.getElementById('customBoughtByInput').style.display = 'none';
+    }
     loadBooks();
   } else {
     alert('Error adding book. Check your Supabase details.');
