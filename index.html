@@ -44,6 +44,17 @@
     <textarea id='bulkBooksTextarea' placeholder='The Very Hungry Caterpillar
 Winnie the Pooh
 Charlotte's Web'></textarea>
+    
+    <div class='bulk-buyer-control'>
+      <label for='bulkBoughtByDropdown'>Who bought these books?</label>
+      <div class='bulk-buyer-inputs'>
+        <select id='bulkBoughtByDropdown' onchange='handleBulkBoughtByChange()'>
+          <option value=''>Select someone...</option>
+        </select>
+        <input type='text' id='bulkCustomBoughtByInput' placeholder='Enter name...' style='display: none;' />
+      </div>
+    </div>
+    
     <div class='bulk-buttons'>
       <button onclick='addBulkBooks()'>Add All Books</button>
       <button onclick='toggleBulkMode()' style='background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);'>Cancel</button>

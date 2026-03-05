@@ -41,6 +41,7 @@ async function loadBuyers() {
     const data = await response.json();
     buyersList = data.map(b => ({ id: b.id, name: b.name }));
     updateBuyersDropdown();
+    updateBulkBuyersDropdown();
     updateBuyersDisplay();
   } catch (error) {
     console.error('Error loading buyers:', error);
@@ -49,6 +50,27 @@ async function loadBuyers() {
 
 function updateBuyersDropdown() {
   const dropdown = document.getElementById('boughtByDropdown');
+  const currentValue = dropdown.value;
+  
+  dropdown.innerHTML = '<option value="">Select someone...</option>';
+  
+  buyersList.forEach(buyer => {
+    const option = document.createElement('option');
+    option.value = buyer.name;
+    option.textContent = buyer.name;
+    dropdown.appendChild(option);
+  });
+  
+  const otherOption = document.createElement('option');
+  otherOption.value = 'Other';
+  otherOption.textContent = 'Other';
+  dropdown.appendChild(otherOption);
+  
+  dropdown.value = currentValue;
+}
+
+function updateBulkBuyersDropdown() {
+  const dropdown = document.getElementById('bulkBoughtByDropdown');
   const currentValue = dropdown.value;
   
   dropdown.innerHTML = '<option value="">Select someone...</option>';
@@ -120,6 +142,7 @@ async function addBuyer() {
       buyersList.push({ id: newBuyer[0].id, name: newBuyer[0].name });
       input.value = '';
       updateBuyersDropdown();
+      updateBulkBuyersDropdown();
       updateBuyersDisplay();
     } else {
       alert('Error adding buyer');
@@ -144,6 +167,7 @@ async function removeBuyer(id, name) {
       if (response.ok) {
         buyersList = buyersList.filter(b => b.id !== id);
         updateBuyersDropdown();
+        updateBulkBuyersDropdown();
         updateBuyersDisplay();
       } else {
         alert('Error removing buyer');
@@ -277,12 +301,28 @@ function toggleBulkMode() {
     bulkSection.style.display = 'none';
     bulkButtons.classList.remove('show');
     document.getElementById('bulkBooksTextarea').value = '';
+    document.getElementById('bulkBoughtByDropdown').value = '';
+    document.getElementById('bulkCustomBoughtByInput').value = '';
+    document.getElementById('bulkCustomBoughtByInput').style.display = 'none';
   }
 }
 
 function handleBoughtByChange() {
   const dropdown = document.getElementById('boughtByDropdown');
   const customInput = document.getElementById('customBoughtByInput');
+  
+  if (dropdown.value === 'Other') {
+    customInput.style.display = 'block';
+    customInput.focus();
+  } else {
+    customInput.style.display = 'none';
+    customInput.value = '';
+  }
+}
+
+function handleBulkBoughtByChange() {
+  const dropdown = document.getElementById('bulkBoughtByDropdown');
+  const customInput = document.getElementById('bulkCustomBoughtByInput');
   
   if (dropdown.value === 'Other') {
     customInput.style.display = 'block';
@@ -312,6 +352,18 @@ async function addBulkBooks() {
     return;
   }
 
+  const dropdown = document.getElementById('bulkBoughtByDropdown');
+  const customInput = document.getElementById('bulkCustomBoughtByInput');
+  
+  let boughtBy = null;
+  if (dropdown && dropdown.value) {
+    if (dropdown.value === 'Other' && customInput.value.trim()) {
+      boughtBy = customInput.value.trim();
+    } else if (dropdown.value !== 'Other') {
+      boughtBy = dropdown.value;
+    }
+  }
+
   let added = 0;
   let skipped = 0;
 
@@ -331,7 +383,11 @@ async function addBulkBooks() {
           'Authorization': `Bearer ${SUPABASE_KEY}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name: bookName, date_added: today })
+        body: JSON.stringify({ 
+          name: bookName, 
+          date_added: today,
+          bought_by: boughtBy
+        })
       });
 
       if (response.ok) {
@@ -349,6 +405,9 @@ async function addBulkBooks() {
   alert(message);
 
   textarea.value = '';
+  document.getElementById('bulkBoughtByDropdown').value = '';
+  document.getElementById('bulkCustomBoughtByInput').value = '';
+  document.getElementById('bulkCustomBoughtByInput').style.display = 'none';
   toggleBulkMode();
   loadBooks();
 }
