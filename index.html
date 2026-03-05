@@ -16,6 +16,16 @@
       <button onclick='addBook()'>Add Book</button>
     </div>
     
+    <div class='bought-by-control'>
+      <label for='boughtByDropdown'>Who bought it?</label>
+      <div class='bought-by-inputs'>
+        <select id='boughtByDropdown' onchange='handleBoughtByChange()'>
+          <option value=''>Select someone...</option>
+        </select>
+        <input type='text' id='customBoughtByInput' placeholder='Enter name...' style='display: none;' />
+      </div>
+    </div>
+    
     <div class='action-buttons'>
       <button onclick='toggleSearch()'>🔍 Search</button>
       <button onclick='toggleBulkMode()'>📝 Bulk Add</button>
@@ -25,22 +35,8 @@
   </div>
 
   <div class='main-content'>
-    <div id='bookList'></div>
-    
-    <div id='boughtBySection' class='bought-by-section'>
-      <label for='boughtByDropdown'>Who bought it?</label>
-      <select id='boughtByDropdown' onchange='handleBoughtByChange()'>
-        <option value=''>Select someone...</option>
-        <option value='Mum'>Mum</option>
-        <option value='Dad'>Dad</option>
-        <option value='Grandma'>Grandma</option>
-        <option value='Grandpa'>Grandpa</option>
-        <option value='Auntie'>Auntie</option>
-        <option value='Uncle'>Uncle</option>
-        <option value='Other'>Other</option>
-      </select>
-      <input type='text' id='customBoughtByInput' placeholder='Enter name...' style='display: none;' />
-    </div>
+    <div id='bookList' class='books-column'></div>
+    <div id='datesColumn' class='dates-column'></div>
   </div>
 
   <div id='bulkSection' class='bulk-section' style='display: none;'>
@@ -58,6 +54,23 @@ Charlotte's Web'></textarea>
   <div id='searchSection' style='display: none; margin-bottom: 20px;'>
     <input type='text' id='searchInput' placeholder='Search books...' onkeyup='searchBooks()' />
     <div id='searchResults' class='search-results'></div>
+  </div>
+
+  <div id='settingsSection' class='settings-section'>
+    <h3>📋 Manage Buyers</h3>
+    <div class='settings-content'>
+      <div class='buyer-list'>
+        <h4>Current Buyers:</h4>
+        <div id='buyersList'></div>
+      </div>
+      <div class='add-buyer'>
+        <label for='newBuyerInput'>Add New Buyer:</label>
+        <div class='add-buyer-inputs'>
+          <input type='text' id='newBuyerInput' placeholder='Enter name...' />
+          <button onclick='addBuyer()'>Add</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

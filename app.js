@@ -4,7 +4,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 let allBooks = [];
 let deleteMode = false;
 let sortBy = 'name';
-const boughtByOptions = ['Mum', 'Dad', 'Grandma', 'Grandpa', 'Auntie', 'Uncle'];
+let buyersList = ['Mum', 'Dad', 'Grandma', 'Grandpa', 'Auntie', 'Uncle'];
 
 // Color gradient presets
 const gradientThemes = [
@@ -26,6 +26,68 @@ function formatDate(dateString) {
   if (!dateString) return '';
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function updateBuyersDropdown() {
+  const dropdown = document.getElementById('boughtByDropdown');
+  const currentValue = dropdown.value;
+  
+  dropdown.innerHTML = '<option value="">Select someone...</option>';
+  
+  buyersList.forEach(buyer => {
+    const option = document.createElement('option');
+    option.value = buyer;
+    option.textContent = buyer;
+    dropdown.appendChild(option);
+  });
+  
+  const otherOption = document.createElement('option');
+  otherOption.value = 'Other';
+  otherOption.textContent = 'Other';
+  dropdown.appendChild(otherOption);
+  
+  dropdown.value = currentValue;
+}
+
+function updateBuyersDisplay() {
+  const buyersList_elem = document.getElementById('buyersList');
+  buyersList_elem.innerHTML = buyersList.map(buyer => `
+    <div class='buyer-item'>
+      <span>${buyer}</span>
+      <button class='remove-btn' onclick='removeBuyer("${buyer}")'>✕</button>
+    </div>
+  `).join('');
+}
+
+function addBuyer() {
+  const input = document.getElementById('newBuyerInput');
+  const name = input.value.trim();
+  
+  if (!name) {
+    alert('Please enter a name');
+    return;
+  }
+  
+  if (buyersList.includes(name)) {
+    alert('This name already exists');
+    input.value = '';
+    return;
+  }
+  
+  buyersList.push(name);
+  input.value = '';
+  updateBuyersDropdown();
+  updateBuyersDisplay();
+  localStorage.setItem('buyersList', JSON.stringify(buyersList));
+}
+
+function removeBuyer(name) {
+  if (confirm(`Remove "${name}" from the list?`)) {
+    buyersList = buyersList.filter(b => b !== name);
+    updateBuyersDropdown();
+    updateBuyersDisplay();
+    localStorage.setItem('buyersList', JSON.stringify(buyersList));
+  }
 }
 
 async function loadBooks() {
@@ -55,10 +117,12 @@ function sortBooks(books) {
 
 function displayBooks() {
   const list = document.getElementById('bookList');
+  const datesColumn = document.getElementById('datesColumn');
   const displayBooks = sortBooks(allBooks);
 
   if (displayBooks.length === 0) {
     list.innerHTML = '<p class="empty-message">No books yet. Add one to get started!</p>';
+    datesColumn.innerHTML = '';
     return;
   }
 
@@ -66,10 +130,16 @@ function displayBooks() {
     <div class='book-item'>
       <div class='book-details'>
         <p class='book-name'>${book.name}</p>
-        ${book.date_added ? `<p class='book-date'>Added: ${formatDate(book.date_added)}</p>` : ''}
         ${book.bought_by ? `<p class='book-buyer'>From: ${book.bought_by}</p>` : ''}
       </div>
       <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
+    </div>
+  `).join('');
+
+  datesColumn.innerHTML = '<div class="dates-header">📅 Dates</div>' + displayBooks.map(book => `
+    <div class='date-item'>
+      <p class='date-book-name'>${book.name}</p>
+      <p class='date-value'>${formatDate(book.date_added)}</p>
     </div>
   `).join('');
 }
@@ -206,7 +276,6 @@ function searchBooks() {
     <div class='book-item'>
       <div class='book-details'>
         <p class='book-name'>${book.name}</p>
-        ${book.date_added ? `<p class='book-date'>Added: ${formatDate(book.date_added)}</p>` : ''}
         ${book.bought_by ? `<p class='book-buyer'>From: ${book.bought_by}</p>` : ''}
       </div>
       <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
@@ -288,6 +357,16 @@ async function deleteBook(id) {
   }
 }
 
-// Apply random gradient on page load
-applyRandomGradient();
-loadBooks();
+// Initialize
+function init() {
+  const saved = localStorage.getItem('buyersList');
+  if (saved) {
+    buyersList = JSON.parse(saved);
+  }
+  updateBuyersDropdown();
+  updateBuyersDisplay();
+  applyRandomGradient();
+  loadBooks();
+}
+
+init();
