@@ -10,19 +10,34 @@
   
   <h1>💜 Baby Violet's Books</h1>
 
- <div class='controls'>
-  <div class='control-group'>
-    <input type='text' id='bookInput' placeholder='Enter book name...' />
-    <button onclick='addBook()'>Add Book</button>
+  <div class='controls'>
+    <div class='control-group'>
+      <input type='text' id='bookInput' placeholder='Enter book name...' />
+      <button onclick='addBook()'>Add Book</button>
+    </div>
+    
+    <div class='action-buttons'>
+      <button onclick='toggleSearch()'>🔍 Search</button>
+      <button onclick='toggleBulkMode()'>📝 Bulk Add</button>
+      <button id='sortBtn' onclick='toggleSortBy()'>📅 Sort by Date</button>
+      <button onclick='toggleDeleteMode()'>🗑️ Delete</button>
+    </div>
   </div>
-  
-  <div class='action-buttons'>
-    <button onclick='toggleSearch()'>🔍 Search</button>
-    <button onclick='toggleBulkMode()'>📝 Bulk Add</button>
-    <button onclick='toggleDeleteMode()'>🗑️ Delete</button>
-  </div>
-</div>
 
+  <div id='boughtBySection' class='bought-by-section' style='display: none;'>
+    <label for='boughtByDropdown'>Who bought it?</label>
+    <select id='boughtByDropdown' onchange='handleBoughtByChange()'>
+      <option value=''>Select someone...</option>
+      <option value='Mum'>Mum</option>
+      <option value='Dad'>Dad</option>
+      <option value='Grandma'>Grandma</option>
+      <option value='Grandpa'>Grandpa</option>
+      <option value='Auntie'>Auntie</option>
+      <option value='Uncle'>Uncle</option>
+      <option value='Other'>Other</option>
+    </select>
+    <input type='text' id='customBoughtByInput' placeholder='Enter name...' style='display: none;' />
+  </div>
 
   <div id='bulkSection' class='bulk-section' style='display: none;'>
     <h3>Bulk Add Books</h3>
