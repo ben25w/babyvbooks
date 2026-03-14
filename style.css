@@ -384,7 +384,7 @@ button:hover {
   padding: 40px 28px 100px;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 36px;
 }
 
 .modal-back {
@@ -407,26 +407,27 @@ button:hover {
   font-size: 2em;
   font-weight: 700;
   text-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  margin-top: -20px;
+  margin-top: -16px;
 }
 
+/* Groups of fields get spacing between them */
+.modal-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Each label + input pair */
 .modal-field {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
-
 .modal-field label {
   color: white;
   font-weight: 600;
   font-size: 1.05em;
   text-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-
-.modal-form-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
 }
 
 .modal-add-btn {
@@ -476,4 +477,37 @@ button:hover {
   gap: 32px;
 }
 
-/*
+/* ── SUCCESS STATE ── */
+.success-message {
+  background: rgba(255,255,255,0.95);
+  border-radius: 16px;
+  padding: 36px 28px;
+  text-align: center;
+  font-size: 1.2em;
+  color: #333;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  line-height: 1.7;
+}
+.success-buttons {
+  display: flex;
+  gap: 14px;
+}
+.success-buttons button {
+  flex: 1;
+  padding: 16px;
+  font-size: 1em;
+}
+.btn-green {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  box-shadow: 0 4px 15px rgba(39,174,96,0.35);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  h1 { font-size: 1.9em; }
+  .banner { font-size: 1.3em; padding: 16px; }
+  .action-buttons button { flex: 1 1 calc(50% - 5px); }
+  .modal-title { font-size: 1.6em; }
+  .success-buttons { flex-direction: column; }
+  .edit-actions { flex-direction: column; }
+}

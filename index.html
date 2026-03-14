@@ -82,17 +82,20 @@
     </div>
 
     <div id='addFormState'>
-      <div class='modal-field'>
-        <label>Book name</label>
-        <input type='text' id='modalBookInput' placeholder='Enter book name...' />
+      <div class='modal-form-fields'>
+        <div class='modal-field'>
+          <label>Book name</label>
+          <input type='text' id='modalBookInput' placeholder='Enter book name...' />
+        </div>
+        <div class='modal-field'>
+          <label>Who bought it?</label>
+          <select id='modalBoughtByDropdown' onchange='handleModalBoughtByChange()'>
+            <option value=''>Select someone...</option>
+          </select>
+          <input type='text' id='modalCustomBoughtBy' placeholder='Enter name...' style='display:none; margin-top:10px;' />
+        </div>
       </div>
-      <div class='modal-field'>
-        <label>Who bought it?</label>
-        <select id='modalBoughtByDropdown' onchange='handleModalBoughtByChange()'>
-          <option value=''>Select someone...</option>
-        </select>
-        <input type='text' id='modalCustomBoughtBy' placeholder='Enter name...' style='display:none; margin-top:10px;' />
-      </div>
+
       <button class='modal-add-btn' onclick='addBook()'>➕ Add Book</button>
 
       <div class='bulk-divider'>
@@ -100,18 +103,20 @@
       </div>
 
       <div id='modalBulkSection' style='display: none;'>
-        <div class='modal-field'>
-          <label>Paste book names (one per line)</label>
-          <textarea id='modalBulkTextarea' placeholder='The Very Hungry Caterpillar
+        <div class='modal-form-fields'>
+          <div class='modal-field'>
+            <label>Paste book names (one per line)</label>
+            <textarea id='modalBulkTextarea' placeholder='The Very Hungry Caterpillar
 Winnie the Pooh
 Charlotte Web'></textarea>
-        </div>
-        <div class='modal-field'>
-          <label>Who bought these books?</label>
-          <select id='modalBulkDropdown' onchange='handleModalBulkBoughtByChange()'>
-            <option value=''>Select someone...</option>
-          </select>
-          <input type='text' id='modalBulkCustom' placeholder='Enter name...' style='display:none; margin-top:10px;' />
+          </div>
+          <div class='modal-field'>
+            <label>Who bought these books?</label>
+            <select id='modalBulkDropdown' onchange='handleModalBulkBoughtByChange()'>
+              <option value=''>Select someone...</option>
+            </select>
+            <input type='text' id='modalBulkCustom' placeholder='Enter name...' style='display:none; margin-top:10px;' />
+          </div>
         </div>
         <button class='modal-add-btn modal-bulk-btn' onclick='addBulkBooks()'>📝 Add All Books</button>
       </div>
