@@ -6,6 +6,7 @@
 <link rel='stylesheet' href='style.css'>
 
 <div class='container'>
+
   <div class='banner'>
     <span id='bannerText'></span>
   </div>
@@ -13,125 +14,109 @@
   <h1>💜 Baby Violet's Books</h1>
 
   <div class='controls'>
+    <button class='add-book-main-btn' onclick='openAddModal()'>➕ Add Book</button>
     <div class='action-buttons'>
       <button onclick='toggleSearch()'>🔍 Search</button>
       <button id='sortBtn' onclick='toggleSortBy()'>📅 Sort by Date</button>
       <button id='detailsBtn' onclick='toggleDetails()'>👁️ Show Details</button>
-      <button onclick='openAddModal()'>➕ Add Book</button>
       <button onclick='toggleSettings()'>⚙️ Manage</button>
     </div>
   </div>
 
-  <div id='searchSection' style='display: none; margin-bottom: 20px;'>
+  <div id='searchSection' style='display: none;'>
     <input type='text' id='searchInput' placeholder='Search books...' onkeyup='searchBooks()' />
     <div id='searchResults' class='search-results'></div>
   </div>
 
-  <!-- Manage panel — sits between controls and book list -->
   <div id='settingsSection' class='settings-section' style='display: none;'>
-    <div class='settings-password' id='settingsPasswordRow'>
+
+    <div id='settingsPasswordRow' class='settings-password'>
       <label for='settingsPassword'>Enter password:</label>
       <input type='password' id='settingsPassword' placeholder='Password' />
       <button onclick='unlockSettings()'>Unlock</button>
     </div>
 
-    <div id='settingsContent' class='settings-content' style='display: none;'>
-      <div class='settings-grid'>
+    <div id='settingsContent' style='display: none;'>
 
-        <div class='settings-card full-width'>
-          <button id='editModeBtn' class='edit-mode-trigger' onclick='toggleEditMode()'>✏️ Edit Current Books</button>
+      <button id='editModeBtn' class='edit-mode-trigger' onclick='toggleEditMode()'>✏️ Edit Current Books</button>
+
+      <div class='settings-card'>
+        <h3>📋 Manage Buyers</h3>
+        <h4>Current Buyers:</h4>
+        <div id='buyersList'></div>
+        <div class='add-buyer-inputs'>
+          <input type='text' id='newBuyerInput' placeholder='Add new buyer...' />
+          <button onclick='addBuyer()'>Add</button>
         </div>
-
-        <div class='settings-card'>
-          <h3>📋 Manage Buyers</h3>
-          <div class='settings-inner'>
-            <div class='buyer-list'>
-              <h4>Current Buyers:</h4>
-              <div id='buyersList'></div>
-            </div>
-            <div class='add-buyer'>
-              <label for='newBuyerInput'>Add New Buyer:</label>
-              <div class='add-buyer-inputs'>
-                <input type='text' id='newBuyerInput' placeholder='Enter name...' />
-                <button onclick='addBuyer()'>Add</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class='settings-card'>
-          <h3>🎉 Banner Messages</h3>
-          <p class='settings-hint'>One is picked randomly each time the page loads.</p>
-          <div id='bannerMessagesList'></div>
-          <div class='add-banner-inputs'>
-            <input type='text' id='newBannerInput' placeholder='Enter a banner message...' />
-            <button onclick='addBannerMessage()'>Add</button>
-          </div>
-        </div>
-
       </div>
+
+      <div class='settings-card'>
+        <h3>🎉 Banner Messages</h3>
+        <p class='settings-hint'>One is picked randomly each time the page loads.</p>
+        <div id='bannerMessagesList'></div>
+        <div class='add-banner-inputs'>
+          <input type='text' id='newBannerInput' placeholder='Enter a banner message...' />
+          <button onclick='addBannerMessage()'>Add</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <div id='bookList'></div>
+
 </div>
 
-<!-- Add Book Modal — full screen -->
 <div id='addModal' class='modal-overlay' style='display: none;'>
   <div class='modal-inner'>
+
     <button class='modal-back' onclick='closeAddModal()'>← Back</button>
     <h2 class='modal-title'>➕ Add a Book</h2>
 
-    <!-- Success state -->
     <div id='addSuccessState' style='display: none;'>
       <div class='success-message' id='successMessage'></div>
       <div class='success-buttons'>
         <button onclick='resetAddForm()'>➕ Add Another</button>
-        <button onclick='closeAddModal()' style='background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);'>📚 See Book List</button>
+        <button class='btn-green' onclick='closeAddModal()'>📚 See Book List</button>
       </div>
     </div>
 
-    <!-- Form state -->
     <div id='addFormState'>
       <div class='modal-field'>
         <label>Book name</label>
         <input type='text' id='modalBookInput' placeholder='Enter book name...' />
       </div>
-
       <div class='modal-field'>
         <label>Who bought it?</label>
         <select id='modalBoughtByDropdown' onchange='handleModalBoughtByChange()'>
           <option value=''>Select someone...</option>
         </select>
-        <input type='text' id='modalCustomBoughtBy' placeholder='Enter name...' style='display: none; margin-top: 10px;' />
+        <input type='text' id='modalCustomBoughtBy' placeholder='Enter name...' style='display:none; margin-top:10px;' />
       </div>
-
       <button class='modal-add-btn' onclick='addBook()'>➕ Add Book</button>
 
       <div class='bulk-divider'>
         <button class='bulk-toggle-btn' onclick='toggleModalBulk()'>📝 Bulk Add</button>
       </div>
 
-      <!-- Bulk section inside modal -->
       <div id='modalBulkSection' style='display: none;'>
         <div class='modal-field'>
           <label>Paste book names (one per line)</label>
           <textarea id='modalBulkTextarea' placeholder='The Very Hungry Caterpillar
 Winnie the Pooh
-Charlotte&apos;s Web'></textarea>
+Charlotte Web'></textarea>
         </div>
-
         <div class='modal-field'>
           <label>Who bought these books?</label>
           <select id='modalBulkDropdown' onchange='handleModalBulkBoughtByChange()'>
             <option value=''>Select someone...</option>
           </select>
-          <input type='text' id='modalBulkCustom' placeholder='Enter name...' style='display: none; margin-top: 10px;' />
+          <input type='text' id='modalBulkCustom' placeholder='Enter name...' style='display:none; margin-top:10px;' />
         </div>
-
-        <button class='modal-add-btn' onclick='addBulkBooks()' style='background: linear-gradient(135deg, #6b2d9f 0%, #b565d8 100%);'>📝 Add All Books</button>
+        <button class='modal-add-btn modal-bulk-btn' onclick='addBulkBooks()'>📝 Add All Books</button>
       </div>
     </div>
+
   </div>
 </div>
 
