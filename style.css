@@ -1,514 +1,123 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  /* iOS 26 System Colors (Liquid Variants) */
+  --glass-bg-light: rgba(255, 255, 255, 0.12);
+  --glass-bg-prominent: rgba(255, 255, 255, 0.25);
+  --glass-tint-blue: oklch(0.6 0.18 250 / 0.2);
+  --glass-tint-red: oklch(0.6 0.18 20 / 0.2);
+  
+  /* Standard iOS Spring Easing */
+  --ios-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --glass-blur: 25px;
+}
 
+/* 1. THE ENVIRONMENT 
+   Liquid Glass needs a background to "react" to. */
 body {
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #8b4fb3 0%, #d994e6 50%, #f8d5f0 100%);
+  margin: 0;
+  padding: 0;
   min-height: 100vh;
-  padding: 30px 20px;
-}
-
-.container {
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-/* ── ANIMATIONS ── */
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes cascadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── BANNER ── */
-.banner {
-  background: linear-gradient(135deg, #ff6b9d 0%, #ffa502 100%);
+  background: linear-gradient(135deg, #1a1a1a, #2c3e50); /* Dark mode canvas */
+  font-family: -apple-system, "SF Pro Display", sans-serif;
   color: white;
-  text-align: center;
-  padding: 20px;
-  border-radius: 16px;
-  margin-bottom: 30px;
-  box-shadow: 0 8px 30px rgba(255,107,157,0.4);
-  font-size: 1.8em;
-  font-weight: 700;
-  letter-spacing: 1px;
-  animation: slideDown 0.6s ease-out;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ── HEADINGS ── */
-h1 {
-  color: #fff;
-  text-align: center;
-  font-size: 2.5em;
-  margin-bottom: 30px;
-  text-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  font-weight: 700;
-  animation: fadeIn 0.8s ease-out 0.2s both;
-}
-h3 { color: #8b4fb3; font-weight: 700; margin-bottom: 12px; font-size: 1.1em; }
-h4 { color: #666; font-weight: 600; margin-bottom: 10px; font-size: 0.95em; }
-
-/* ── CONTROLS ── */
-.controls {
+/* 2. THE CONTAINER (GlassEffectContainer)
+   Use this when you want buttons to "melt" into each other when close. */
+.glass-effect-container {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
-  animation: fadeIn 0.8s ease-out 0.3s both;
-}
-
-.add-book-main-btn {
-  width: 100%;
-  padding: 18px;
-  font-size: 1.15em;
-  font-weight: 700;
-  background: linear-gradient(135deg, #ff6b9d 0%, #ffa502 100%);
-  box-shadow: 0 6px 20px rgba(255,107,157,0.4);
-  border-radius: 14px;
-}
-.add-book-main-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(255,107,157,0.6);
-}
-
-.action-buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.action-buttons button {
-  flex: 1;
-  min-width: 0;
-}
-
-/* ── INPUTS ── */
-input[type='text'],
-input[type='password'] {
-  padding: 14px 16px;
-  font-size: 16px;
-  border: none;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.95);
-  font-family: 'Poppins', sans-serif;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  width: 100%;
-}
-input[type='text']:focus,
-input[type='password']:focus {
-  outline: none;
-  background: white;
-  box-shadow: 0 8px 25px rgba(139,79,179,0.25);
-}
-
-select {
-  padding: 14px 16px;
-  font-size: 16px;
-  border: none;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.95);
-  font-family: 'Poppins', sans-serif;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  cursor: pointer;
-  color: #333;
-  width: 100%;
-}
-select:focus {
-  outline: none;
-  background: white;
-  box-shadow: 0 8px 25px rgba(139,79,179,0.25);
-}
-
-textarea {
-  padding: 14px 16px;
-  font-size: 15px;
-  border: none;
-  border-radius: 12px;
-  width: 100%;
-  font-family: 'Poppins', sans-serif;
-  min-height: 160px;
-  background: rgba(255,255,255,0.95);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  resize: vertical;
-}
-textarea:focus {
-  outline: none;
-  background: white;
-  box-shadow: 0 8px 25px rgba(139,79,179,0.25);
-}
-
-/* ── BUTTONS ── */
-button {
-  padding: 13px 20px;
-  font-size: 15px;
-  font-weight: 600;
-  background: linear-gradient(135deg, #8b4fb3 0%, #b565d8 100%);
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(139,79,179,0.3);
-  font-family: 'Poppins', sans-serif;
-}
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(139,79,179,0.45);
-}
-
-/* ── SEARCH ── */
-#searchSection {
-  margin-bottom: 20px;
-  animation: slideDown 0.4s ease-out;
-}
-.search-results { margin-top: 15px; }
-.search-title {
-  color: #8b4fb3;
-  font-weight: 700;
-  margin-bottom: 10px;
-  font-size: 0.9em;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* ── MANAGE PANEL ── */
-.settings-section {
-  background: rgba(255,255,255,0.95);
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-  margin-bottom: 25px;
-  overflow: hidden;
-  animation: slideDown 0.4s ease-out;
-}
-
-.settings-password {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 28px;
-}
-.settings-password label {
-  color: #8b4fb3;
-  font-weight: 600;
-  font-size: 0.95em;
-}
-.settings-password button {
-  width: 100%;
-}
-
-.edit-mode-trigger {
-  display: block;
-  width: calc(100% - 48px);
-  margin: 28px 24px 0;
-  font-size: 1em;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-  box-shadow: 0 4px 15px rgba(243,156,18,0.35);
-  border-radius: 12px;
-}
-.edit-mode-trigger:hover {
-  box-shadow: 0 8px 25px rgba(243,156,18,0.5);
-}
-
-.settings-card {
-  padding: 28px;
-  border-top: 1px solid rgba(139,79,179,0.1);
-  margin-top: 8px;
-}
-
-.settings-hint {
-  color: #888;
-  font-size: 0.85em;
-  margin-bottom: 16px;
-}
-
-.buyer-item {
-  background: rgba(248,213,240,0.5);
-  padding: 13px 16px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  color: #333;
-}
-
-.remove-btn {
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-  padding: 5px 11px;
-  font-size: 12px;
-  flex-shrink: 0;
-  margin-left: 10px;
-  box-shadow: 0 2px 8px rgba(231,76,60,0.3);
-}
-.remove-btn:hover {
-  box-shadow: 0 4px 12px rgba(231,76,60,0.45);
-}
-
-.add-buyer-inputs,
-.add-banner-inputs {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-  align-items: stretch;
-}
-.add-buyer-inputs input,
-.add-banner-inputs input {
-  flex: 1;
-}
-.add-buyer-inputs button,
-.add-banner-inputs button {
-  flex-shrink: 0;
-  padding: 13px 20px;
-  white-space: nowrap;
-}
-
-/* ── BOOK LIST ── */
-#bookList { margin-bottom: 30px; }
-
-.book-item {
-  background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,213,240,0.5) 100%);
-  padding: 18px 20px;
-  margin-bottom: 10px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
-  animation: cascadeIn 0.5s ease-out backwards;
-}
-.book-item:nth-child(1) { animation-delay: 0.05s; }
-.book-item:nth-child(2) { animation-delay: 0.1s; }
-.book-item:nth-child(3) { animation-delay: 0.15s; }
-.book-item:nth-child(4) { animation-delay: 0.2s; }
-.book-item:nth-child(5) { animation-delay: 0.25s; }
-.book-item:nth-child(n+6) { animation-delay: 0.3s; }
-.book-item:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(139,79,179,0.18); }
-
-.book-item-simple { padding: 14px 20px; }
-
-.book-details { display: flex; flex-direction: column; gap: 5px; }
-.book-name { font-size: 17px; color: #333; font-weight: 600; margin: 0; }
-.book-item-simple .book-name { font-size: 15px; }
-.book-info { font-size: 13px; color: #666; margin: 0; }
-.book-info strong { color: #8b4fb3; font-weight: 600; }
-
-/* ── EDIT ROW ── */
-.edit-row {
-  margin-top: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  background: rgba(248,213,240,0.35);
-  padding: 16px;
-  border-radius: 10px;
-}
-.edit-field { display: flex; flex-direction: column; gap: 6px; }
-.edit-label {
-  font-size: 0.78em;
-  font-weight: 700;
-  color: #8b4fb3;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.edit-buyer-select,
-.edit-buyer-custom {
-  width: 100%;
-  font-size: 14px;
-  padding: 10px 12px;
-}
-.edit-date-input {
-  padding: 10px 12px;
-  font-size: 14px;
-  border: none;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.95);
-  font-family: 'Poppins', sans-serif;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  width: 100%;
-}
-.edit-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 4px;
-}
-.save-edit-btn {
-  flex: 1;
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  padding: 11px 16px;
-  font-size: 13px;
-  box-shadow: 0 3px 12px rgba(39,174,96,0.3);
-}
-.save-edit-btn:hover { box-shadow: 0 5px 18px rgba(39,174,96,0.45); }
-
-.delete-inline-btn {
-  flex: 1;
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-  padding: 11px 16px;
-  font-size: 13px;
-  box-shadow: 0 3px 12px rgba(231,76,60,0.3);
-}
-.delete-inline-btn:hover { box-shadow: 0 5px 18px rgba(231,76,60,0.45); }
-
-/* ── EMPTY ── */
-.empty-message {
-  color: #999;
-  font-style: italic;
-  padding: 20px;
-  text-align: center;
-  background: rgba(255,255,255,0.7);
-  border-radius: 12px;
-}
-
-/* ── ADD BOOK MODAL ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg, #8b4fb3 0%, #d994e6 50%, #f8d5f0 100%);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.modal-inner {
-  max-width: 600px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 40px 28px 100px;
-  display: flex;
-  flex-direction: column;
-  gap: 36px;
-}
-
-.modal-back {
-  align-self: flex-start;
-  background: rgba(255,255,255,0.25);
-  color: white;
-  font-size: 1em;
-  padding: 11px 20px;
-  box-shadow: none;
-  border-radius: 12px;
-}
-.modal-back:hover {
-  background: rgba(255,255,255,0.38);
-  transform: translateY(-2px);
-  box-shadow: none;
-}
-
-.modal-title {
-  color: white;
-  font-size: 2em;
-  font-weight: 700;
-  text-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  margin-top: -16px;
-}
-
-.modal-form-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-
-.modal-field {
-  display: flex;
-  flex-direction: column;
   gap: 16px;
-}
-.modal-field label {
-  color: white;
-  font-weight: 600;
-  font-size: 1.05em;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-
-/* ── FIX: !important on margin-top so nothing can override it ── */
-.modal-add-btn {
-  width: 100%;
-  padding: 18px;
-  font-size: 1.1em;
-  background: linear-gradient(135deg, #ff6b9d 0%, #ffa502 100%);
-  box-shadow: 0 6px 20px rgba(255,107,157,0.4);
-  border-radius: 14px;
-  margin-top: 16px !important;
-}
-.modal-add-btn:hover {
-  box-shadow: 0 10px 28px rgba(255,107,157,0.55);
-}
-.modal-bulk-btn {
-  background: linear-gradient(135deg, #6b2d9f 0%, #b565d8 100%);
-  box-shadow: 0 6px 20px rgba(107,45,159,0.35);
+  padding: 24px;
+  background: transparent;
+  /* The "Magic" Morphing Filter */
+  filter: blur(8px) contrast(15); 
+  overflow: visible;
+  justify-content: center;
 }
 
-.bulk-divider {
+/* 3. THE ELEMENT (glassEffect modifier) */
+.glass-element {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-top: 12px;
-}
-.bulk-divider::before,
-.bulk-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: rgba(255,255,255,0.35);
-}
-.bulk-toggle-btn {
-  background: rgba(255,255,255,0.2);
-  color: white;
-  font-size: 0.9em;
-  padding: 11px 22px;
-  box-shadow: none;
-  white-space: nowrap;
-}
-.bulk-toggle-btn:hover {
-  background: rgba(255,255,255,0.32);
-  box-shadow: none;
-}
-
-#modalBulkSection {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 999px; /* Capsule shape is native for iOS 26 */
+  
+  /* Material */
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(var(--glass-blur)) saturate(210%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(210%);
+  
+  /* The "Rim Light" / Border */
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.15);
+  
+  /* Interactions */
+  cursor: pointer;
+  transition: 
+    transform 0.5s var(--ios-spring),
+    background 0.3s ease,
+    backdrop-filter 0.3s ease;
+  
+  user-select: none;
 }
 
-/* ── SUCCESS STATE ── */
-.success-message {
-  background: rgba(255,255,255,0.95);
-  border-radius: 16px;
-  padding: 36px 28px;
-  text-align: center;
-  font-size: 1.2em;
-  color: #333;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-  line-height: 1.7;
-}
-.success-buttons {
-  display: flex;
-  gap: 14px;
-}
-.success-buttons button {
-  flex: 1;
-  padding: 16px;
-  font-size: 1em;
-}
-.btn-green {
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  box-shadow: 0 4px 15px rgba(39,174,96,0.35);
+/* 4. CONTENT FIX 
+   The container's contrast filter ruins text. This reverses it. */
+.glass-content {
+  filter: contrast(0.07); 
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 600px) {
-  h1 { font-size: 1.9em; }
-  .banner { font-size: 1.3em; padding: 16px; }
-  .action-buttons button { flex: 1 1 calc(50% - 5px); }
-  .modal-title { font-size: 1.6em; }
-  .success-buttons { flex-direction: column; }
-  .edit-actions { flex-direction: column; }
+/* 5. INTERACTIVE STATES (.interactive() modifier) */
+.glass-element:hover {
+  transform: scale(1.06) translateY(-2px);
+  background: var(--glass-bg-prominent);
+  backdrop-filter: blur(35px) saturate(250%);
+}
+
+.glass-element:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px) saturate(140%);
+}
+
+/* 6. BUTTON STYLES (.buttonStyle(.glassProminent)) */
+.glass-prominent {
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.glass-blue { background: var(--glass-tint-blue); }
+.glass-red  { background: var(--glass-tint-red); }
+
+/* 7. ACCESSIBILITY FALLBACKS */
+@media (prefers-reduced-transparency: reduce) {
+  .glass-element {
+    background: #2c2c2e !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 2px solid #ffffff;
+  }
+  .glass-effect-container {
+    filter: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-element {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* 8. SCROLL EDGE EFFECT (.scrollEdgeEffectStyle) */
+.scroll-edge-soft {
+  mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
 }
