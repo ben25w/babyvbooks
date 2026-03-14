@@ -190,8 +190,8 @@ button:hover {
 .settings-password {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 24px;
+  gap: 14px;
+  padding: 28px;
 }
 .settings-password label {
   color: #8b4fb3;
@@ -205,7 +205,7 @@ button:hover {
 .edit-mode-trigger {
   display: block;
   width: calc(100% - 48px);
-  margin: 24px 24px 0;
+  margin: 28px 24px 0;
   font-size: 1em;
   padding: 16px 20px;
   background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
@@ -217,15 +217,15 @@ button:hover {
 }
 
 .settings-card {
-  padding: 24px;
+  padding: 28px;
   border-top: 1px solid rgba(139,79,179,0.1);
-  margin-top: 20px;
+  margin-top: 8px;
 }
 
 .settings-hint {
   color: #888;
   font-size: 0.85em;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .buyer-item {
@@ -256,7 +256,7 @@ button:hover {
 .add-banner-inputs {
   display: flex;
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 16px;
   align-items: stretch;
 }
 .add-buyer-inputs input,
@@ -303,7 +303,7 @@ button:hover {
   margin-top: 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   background: rgba(248,213,240,0.35);
   padding: 16px;
   border-radius: 10px;
@@ -381,10 +381,10 @@ button:hover {
   max-width: 600px;
   width: 100%;
   margin: 0 auto;
-  padding: 40px 24px 80px;
+  padding: 40px 28px 100px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 40px;
 }
 
 .modal-back {
@@ -407,20 +407,26 @@ button:hover {
   font-size: 2em;
   font-weight: 700;
   text-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  margin-top: -10px;
+  margin-top: -20px;
 }
 
 .modal-field {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
+
 .modal-field label {
   color: white;
   font-weight: 600;
-  font-size: 1em;
+  font-size: 1.05em;
   text-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  margin-top: 6px;
+}
+
+.modal-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
 .modal-add-btn {
@@ -443,7 +449,6 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin: 6px 0;
 }
 .bulk-divider::before,
 .bulk-divider::after {
@@ -468,41 +473,7 @@ button:hover {
 #modalBulkSection {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  margin-top: 6px;
+  gap: 32px;
 }
 
-/* ── SUCCESS STATE ── */
-.success-message {
-  background: rgba(255,255,255,0.95);
-  border-radius: 16px;
-  padding: 36px 28px;
-  text-align: center;
-  font-size: 1.2em;
-  color: #333;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-  line-height: 1.7;
-}
-.success-buttons {
-  display: flex;
-  gap: 14px;
-}
-.success-buttons button {
-  flex: 1;
-  padding: 16px;
-  font-size: 1em;
-}
-.btn-green {
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  box-shadow: 0 4px 15px rgba(39,174,96,0.35);
-}
-
-/* ── RESPONSIVE ── */
-@media (max-width: 600px) {
-  h1 { font-size: 1.9em; }
-  .banner { font-size: 1.3em; padding: 16px; }
-  .action-buttons button { flex: 1 1 calc(50% - 5px); }
-  .modal-title { font-size: 1.6em; }
-  .success-buttons { flex-direction: column; }
-  .edit-actions { flex-direction: column; }
-}
+/*
