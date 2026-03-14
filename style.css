@@ -599,5 +599,112 @@ button:active {
   box-shadow: 0 5px 20px rgba(39, 174, 96, 0.4);
   transform: translateY(-2px);
 }
+/* Rolling banner fade */
+#bannerText {
+  display: inline-block;
+  transition: opacity 0.5s ease;
+}
+
+.banner-fade-out {
+  opacity: 0 !important;
+}
+
+.banner-fade-in {
+  opacity: 1 !important;
+}
+
+/* Settings grid layout */
+.settings-grid {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.settings-card {
+  flex: 1;
+  min-width: 260px;
+}
+
+.settings-hint {
+  color: #888;
+  font-size: 0.85em;
+  margin-bottom: 12px;
+}
+
+/* Banner message list reuses buyer-item styles — no extra CSS needed */
+
+.add-banner-inputs {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.add-banner-inputs input {
+  flex: 1;
+}
+
+/* Edit row */
+.edit-row {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(248, 213, 240, 0.3);
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.edit-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: #8b4fb3;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.edit-buyer-inputs {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-buyer-select,
+.edit-buyer-custom {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+.edit-date-input {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+}
+
+.save-edit-btn {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 3px 12px rgba(39, 174, 96, 0.3);
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
+.save-edit-btn:hover {
+  box-shadow: 0 5px 20px rgba(39, 174, 96, 0.4);
+  transform: translateY(-2px);
+}
 
 }

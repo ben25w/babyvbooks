@@ -6,8 +6,10 @@
 <link rel='stylesheet' href='style.css'>
 
 <div class='container'>
-  <div class='banner'>🎉 Happy 100 Days! 🎉</div>
-  
+  <div class='banner'>
+    <span id='bannerText'></span>
+  </div>
+
   <h1>💜 Baby Violet's Books</h1>
 
   <div class='controls'>
@@ -15,7 +17,7 @@
       <input type='text' id='bookInput' placeholder='Enter book name...' />
       <button onclick='addBook()'>Add Book</button>
     </div>
-    
+
     <div class='bought-by-control'>
       <label for='boughtByDropdown'>Who bought it?</label>
       <div class='bought-by-inputs'>
@@ -25,15 +27,14 @@
         <input type='text' id='customBoughtByInput' placeholder='Enter name...' style='display: none;' />
       </div>
     </div>
-    
+
     <div class='action-buttons'>
       <button onclick='toggleSearch()'>🔍 Search</button>
       <button onclick='toggleBulkMode()'>📝 Bulk Add</button>
       <button id='sortBtn' onclick='toggleSortBy()'>📅 Sort by Date</button>
       <button id='detailsBtn' onclick='toggleDetails()'>👁️ Show Details</button>
-     <button id='editBtn' onclick='toggleEditMode()'>✏️ Edit</button>
-     <button onclick='toggleDeleteMode()'>🗑️ Delete</button>
-
+      <button id='editBtn' onclick='toggleEditMode()' style='display: none;'>✏️ Edit</button>
+      <button id='deleteBtn' onclick='toggleDeleteMode()' style='display: none;'>🗑️ Delete</button>
       <button onclick='toggleSettings()'>⚙️ Manage</button>
     </div>
   </div>
@@ -45,8 +46,8 @@
     <p>Paste or type book names below (one per line):</p>
     <textarea id='bulkBooksTextarea' placeholder='The Very Hungry Caterpillar
 Winnie the Pooh
-Charlotte's Web'></textarea>
-    
+Charlotte&apos;s Web'></textarea>
+
     <div class='bulk-buyer-control'>
       <label for='bulkBoughtByDropdown'>Who bought these books?</label>
       <div class='bulk-buyer-inputs'>
@@ -56,7 +57,7 @@ Charlotte's Web'></textarea>
         <input type='text' id='bulkCustomBoughtByInput' placeholder='Enter name...' style='display: none;' />
       </div>
     </div>
-    
+
     <div class='bulk-buttons'>
       <button onclick='addBulkBooks()'>Add All Books</button>
       <button onclick='toggleBulkMode()' style='background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);'>Cancel</button>
@@ -77,19 +78,36 @@ Charlotte's Web'></textarea>
 
     <div id='settingsContent' class='settings-content' style='display: none;'>
       <button class='close-settings' onclick='toggleSettings()'>✕</button>
-      <h3>📋 Manage Buyers</h3>
-      <div class='settings-inner'>
-        <div class='buyer-list'>
-          <h4>Current Buyers:</h4>
-          <div id='buyersList'></div>
-        </div>
-        <div class='add-buyer'>
-          <label for='newBuyerInput'>Add New Buyer:</label>
-          <div class='add-buyer-inputs'>
-            <input type='text' id='newBuyerInput' placeholder='Enter name...' />
-            <button onclick='addBuyer()'>Add</button>
+
+      <div class='settings-grid'>
+
+        <div class='settings-card'>
+          <h3>📋 Manage Buyers</h3>
+          <div class='settings-inner'>
+            <div class='buyer-list'>
+              <h4>Current Buyers:</h4>
+              <div id='buyersList'></div>
+            </div>
+            <div class='add-buyer'>
+              <label for='newBuyerInput'>Add New Buyer:</label>
+              <div class='add-buyer-inputs'>
+                <input type='text' id='newBuyerInput' placeholder='Enter name...' />
+                <button onclick='addBuyer()'>Add</button>
+              </div>
+            </div>
           </div>
         </div>
+
+        <div class='settings-card'>
+          <h3>🎉 Banner Messages</h3>
+          <p class='settings-hint'>These messages rotate in the banner at the top.</p>
+          <div id='bannerMessagesList'></div>
+          <div class='add-banner-inputs'>
+            <input type='text' id='newBannerInput' placeholder='Enter a banner message...' />
+            <button onclick='addBannerMessage()'>Add</button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

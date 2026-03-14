@@ -8,8 +8,12 @@ let editMode = false;
 let sortBy = 'name';
 let showDetails = false;
 let buyersList = [];
+let bannerMessages = [];
+let bannerIndex = 0;
+let bannerInterval = null;
 
-// Color gradient presets
+// ── GRADIENTS ──────────────────────────────────────────────
+
 const gradientThemes = [
   'linear-gradient(135deg, #8b4fb3 0%, #d994e6 50%, #f8d5f0 100%)',
   'linear-gradient(135deg, #6b2d9f 0%, #e91e63 50%, #fce4ec 100%)',
@@ -24,11 +28,124 @@ function applyRandomGradient() {
   document.body.style.background = gradientThemes[randomIndex];
 }
 
-function formatDate(dateString) {
-  if (!dateString) return 'Not set';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+// ── BANNER ─────────────────────────────────────────────────
+
+async function loadBannerMessages() {
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/banner_messages?order=created_at.asc`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    const data = await response.json();
+    bannerMessages = data.map(m => ({ id: m.id, text: m.text }));
+  } catch (error) {
+    console.error('Error loading banner messages:', error);
+    bannerMessages = [];
+  }
+  startBanner();
+  updateBannerDisplay();
 }
+
+function startBanner() {
+  const el = document.getElementById('bannerText');
+  if (!el) return;
+
+  if (bannerInterval) clearInterval(bannerInterval);
+
+  if (bannerMessages.length === 0) {
+    el.textContent = '🎉 Happy 100 Days! 🎉';
+    return;
+  }
+
+  bannerIndex = 0;
+  el.textContent = bannerMessages[0].text;
+
+  if (bannerMessages.length === 1) return;
+
+  bannerInterval = setInterval(() => {
+    el.classList.add('banner-fade-out');
+    setTimeout(() => {
+      bannerIndex = (bannerIndex + 1) % bannerMessages.length;
+      el.textContent = bannerMessages[bannerIndex].text;
+      el.classList.remove('banner-fade-out');
+      el.classList.add('banner-fade-in');
+      setTimeout(() => el.classList.remove('banner-fade-in'), 600);
+    }, 500);
+  }, 3500);
+}
+
+function updateBannerDisplay() {
+  const list = document.getElementById('bannerMessagesList');
+  if (!list) return;
+  if (bannerMessages.length === 0) {
+    list.innerHTML = '<p class="empty-message" style="margin-bottom:12px;">No messages yet.</p>';
+    return;
+  }
+  list.innerHTML = bannerMessages.map(msg => `
+    <div class='buyer-item'>
+      <span>${msg.text}</span>
+      <button class='remove-btn' onclick='removeBannerMessage(${msg.id})'>✕</button>
+    </div>
+  `).join('');
+}
+
+async function addBannerMessage() {
+  const input = document.getElementById('newBannerInput');
+  const text = input.value.trim();
+  if (!text) { alert('Please enter a message'); return; }
+
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/banner_messages`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({ text: text })
+    });
+    if (response.ok) {
+      const newMsg = await response.json();
+      bannerMessages.push({ id: newMsg[0].id, text: newMsg[0].text });
+      input.value = '';
+      startBanner();
+      updateBannerDisplay();
+    } else {
+      alert('Error saving message');
+    }
+  } catch (error) {
+    console.error('Error adding banner message:', error);
+    alert('Error saving message');
+  }
+}
+
+async function removeBannerMessage(id) {
+  if (!confirm('Remove this banner message?')) return;
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/banner_messages?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    if (response.ok) {
+      bannerMessages = bannerMessages.filter(m => m.id !== id);
+      startBanner();
+      updateBannerDisplay();
+    } else {
+      alert('Error removing message');
+    }
+  } catch (error) {
+    console.error('Error removing banner message:', error);
+    alert('Error removing message');
+  }
+}
+
+// ── BUYERS ─────────────────────────────────────────────────
 
 async function loadBuyers() {
   try {
@@ -58,10 +175,10 @@ function updateBuyersDropdown() {
     option.textContent = buyer.name;
     dropdown.appendChild(option);
   });
-  const otherOption = document.createElement('option');
-  otherOption.value = 'Other';
-  otherOption.textContent = 'Other';
-  dropdown.appendChild(otherOption);
+  const other = document.createElement('option');
+  other.value = 'Other';
+  other.textContent = 'Other';
+  dropdown.appendChild(other);
   dropdown.value = currentValue;
 }
 
@@ -75,32 +192,21 @@ function updateBulkBuyersDropdown() {
     option.textContent = buyer.name;
     dropdown.appendChild(option);
   });
-  const otherOption = document.createElement('option');
-  otherOption.value = 'Other';
-  otherOption.textContent = 'Other';
-  dropdown.appendChild(otherOption);
+  const other = document.createElement('option');
+  other.value = 'Other';
+  other.textContent = 'Other';
+  dropdown.appendChild(other);
   dropdown.value = currentValue;
 }
 
 function updateBuyersDisplay() {
-  const buyersList_elem = document.getElementById('buyersList');
-  buyersList_elem.innerHTML = buyersList.map(buyer => `
+  const el = document.getElementById('buyersList');
+  el.innerHTML = buyersList.map(buyer => `
     <div class='buyer-item'>
       <span>${buyer.name}</span>
       <button class='remove-btn' onclick='removeBuyer(${buyer.id}, "${buyer.name}")'>✕</button>
     </div>
   `).join('');
-}
-
-function unlockSettings() {
-  const password = document.getElementById('settingsPassword').value;
-  if (password === SETTINGS_PASSWORD) {
-    document.querySelector('.settings-password').style.display = 'none';
-    document.getElementById('settingsContent').style.display = 'block';
-  } else {
-    alert('Incorrect password');
-    document.getElementById('settingsPassword').value = '';
-  }
 }
 
 async function addBuyer() {
@@ -118,7 +224,8 @@ async function addBuyer() {
       headers: {
         'apikey': SUPABASE_KEY,
         'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
       },
       body: JSON.stringify({ name: name })
     });
@@ -139,33 +246,35 @@ async function addBuyer() {
 }
 
 async function removeBuyer(id, name) {
-  if (confirm(`Remove "${name}" from the list?`)) {
-    try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/buyers?id=eq.${id}`, {
-        method: 'DELETE',
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`
-        }
-      });
-      if (response.ok) {
-        buyersList = buyersList.filter(b => b.id !== id);
-        updateBuyersDropdown();
-        updateBulkBuyersDropdown();
-        updateBuyersDisplay();
-      } else {
-        alert('Error removing buyer');
+  if (!confirm(`Remove "${name}" from the list?`)) return;
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/buyers?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
       }
-    } catch (error) {
-      console.error('Error removing buyer:', error);
+    });
+    if (response.ok) {
+      buyersList = buyersList.filter(b => b.id !== id);
+      updateBuyersDropdown();
+      updateBulkBuyersDropdown();
+      updateBuyersDisplay();
+    } else {
       alert('Error removing buyer');
     }
+  } catch (error) {
+    console.error('Error removing buyer:', error);
+    alert('Error removing buyer');
   }
 }
+
+// ── SETTINGS / MANAGE ──────────────────────────────────────
 
 function toggleSettings() {
   const settingsSection = document.getElementById('settingsSection');
   const isHidden = settingsSection.style.display === 'none';
+
   if (isHidden) {
     settingsSection.style.display = 'block';
     document.querySelector('.settings-password').style.display = 'flex';
@@ -173,14 +282,39 @@ function toggleSettings() {
     document.getElementById('settingsPassword').value = '';
     document.getElementById('settingsPassword').focus();
   } else {
+    // Closing manage — also turn off edit and delete modes
     settingsSection.style.display = 'none';
+    lockManageMode();
   }
 }
 
-function toggleDetails() {
-  showDetails = !showDetails;
-  const detailsBtn = document.getElementById('detailsBtn');
-  detailsBtn.textContent = showDetails ? '👁️ Hide Details' : '👁️ Show Details';
+function unlockSettings() {
+  const password = document.getElementById('settingsPassword').value;
+  if (password === SETTINGS_PASSWORD) {
+    document.querySelector('.settings-password').style.display = 'none';
+    document.getElementById('settingsContent').style.display = 'block';
+    // Show edit and delete buttons
+    document.getElementById('editBtn').style.display = 'inline-block';
+    document.getElementById('deleteBtn').style.display = 'inline-block';
+  } else {
+    alert('Incorrect password');
+    document.getElementById('settingsPassword').value = '';
+  }
+}
+
+function lockManageMode() {
+  // Hide edit and delete buttons and turn off their modes
+  document.getElementById('editBtn').style.display = 'none';
+  document.getElementById('deleteBtn').style.display = 'none';
+
+  if (editMode) {
+    editMode = false;
+    document.getElementById('editBtn').textContent = '✏️ Edit';
+    document.getElementById('editBtn').style.background = '';
+  }
+  if (deleteMode) {
+    deleteMode = false;
+  }
   displayBooks();
 }
 
@@ -194,7 +328,6 @@ function toggleEditMode() {
     ? 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)'
     : '';
 
-  // Edit mode always shows details so buyer info is visible
   if (editMode && !showDetails) {
     showDetails = true;
     document.getElementById('detailsBtn').textContent = '👁️ Hide Details';
@@ -203,24 +336,44 @@ function toggleEditMode() {
   displayBooks();
 }
 
-function buildBuyerDropdownHTML(bookId, currentBuyer) {
-  let options = '<option value="">Not set</option>';
+function toggleDetails() {
+  showDetails = !showDetails;
+  document.getElementById('detailsBtn').textContent = showDetails ? '👁️ Hide Details' : '👁️ Show Details';
+  displayBooks();
+}
+
+function buildEditRowHTML(book) {
+  // Buyer dropdown
+  let buyerOptions = '<option value="">Not set</option>';
   buyersList.forEach(buyer => {
-    const selected = buyer.name === currentBuyer ? 'selected' : '';
-    options += `<option value="${buyer.name}" ${selected}>${buyer.name}</option>`;
+    const selected = buyer.name === book.bought_by ? 'selected' : '';
+    buyerOptions += `<option value="${buyer.name}" ${selected}>${buyer.name}</option>`;
   });
-  const otherSelected = currentBuyer && !buyersList.some(b => b.name === currentBuyer) ? 'selected' : '';
-  options += `<option value="Other" ${otherSelected}>Other...</option>`;
+  const isOther = book.bought_by && !buyersList.some(b => b.name === book.bought_by);
+  buyerOptions += `<option value="Other" ${isOther ? 'selected' : ''}>Other...</option>`;
+
+  // Date value — stored as YYYY-MM-DD which is exactly what input[type=date] needs
+  const dateValue = book.date_added || '';
+
   return `
-    <div class="edit-buyer-row">
-      <select class="edit-buyer-select" id="editSelect_${bookId}" onchange="handleEditSelectChange(${bookId})">
-        ${options}
-      </select>
-      <input type="text" class="edit-buyer-custom" id="editCustom_${bookId}"
-        placeholder="Enter name..."
-        value="${otherSelected ? currentBuyer || '' : ''}"
-        style="display: ${otherSelected ? 'block' : 'none'};" />
-      <button class="save-edit-btn" onclick="saveBookEdit(${bookId})">💾 Save</button>
+    <div class="edit-row">
+      <div class="edit-field">
+        <label class="edit-label">Bought by:</label>
+        <div class="edit-buyer-inputs">
+          <select class="edit-buyer-select" id="editSelect_${book.id}" onchange="handleEditSelectChange(${book.id})">
+            ${buyerOptions}
+          </select>
+          <input type="text" class="edit-buyer-custom" id="editCustom_${book.id}"
+            placeholder="Enter name..."
+            value="${isOther ? book.bought_by || '' : ''}"
+            style="display: ${isOther ? 'block' : 'none'};" />
+        </div>
+      </div>
+      <div class="edit-field">
+        <label class="edit-label">Date bought:</label>
+        <input type="date" class="edit-date-input" id="editDate_${book.id}" value="${dateValue}" />
+      </div>
+      <button class="save-edit-btn" onclick="saveBookEdit(${book.id})">💾 Save</button>
     </div>
   `;
 }
@@ -240,6 +393,7 @@ function handleEditSelectChange(bookId) {
 async function saveBookEdit(bookId) {
   const select = document.getElementById(`editSelect_${bookId}`);
   const customInput = document.getElementById(`editCustom_${bookId}`);
+  const dateInput = document.getElementById(`editDate_${bookId}`);
 
   let boughtBy = null;
   if (select.value === 'Other') {
@@ -247,6 +401,8 @@ async function saveBookEdit(bookId) {
   } else if (select.value !== '') {
     boughtBy = select.value;
   }
+
+  const dateValue = dateInput.value || null;
 
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/books?id=eq.${bookId}`, {
@@ -257,13 +413,15 @@ async function saveBookEdit(bookId) {
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },
-      body: JSON.stringify({ bought_by: boughtBy })
+      body: JSON.stringify({ bought_by: boughtBy, date_added: dateValue })
     });
 
     if (response.ok) {
-      // Update local data so the list reflects the change immediately
       const book = allBooks.find(b => b.id === bookId);
-      if (book) book.bought_by = boughtBy;
+      if (book) {
+        book.bought_by = boughtBy;
+        book.date_added = dateValue;
+      }
       displayBooks();
     } else {
       alert('Error saving — please try again');
@@ -303,6 +461,12 @@ function sortBooks(books) {
   return filtered.sort((a, b) => a.name.localeCompare(b.name));
 }
 
+function formatDate(dateString) {
+  if (!dateString) return 'Not set';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 function displayBooks() {
   const list = document.getElementById('bookList');
   const books = sortBooks(allBooks);
@@ -313,7 +477,7 @@ function displayBooks() {
   }
 
   list.innerHTML = books.map(book => {
-    const deleteButton = `<button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>`;
+    const deleteButton = `<button class='delete-btn' onclick='deleteBook(${book.id})'>Delete</button>`;
 
     if (editMode) {
       return `
@@ -322,8 +486,23 @@ function displayBooks() {
             <p class='book-name'>${book.name}</p>
             <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
             <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
-            ${buildBuyerDropdownHTML(book.id, book.bought_by)}
+            ${buildEditRowHTML(book)}
           </div>
+        </div>
+      `;
+    }
+
+    if (deleteMode) {
+      return `
+        <div class='book-item ${showDetails ? '' : 'book-item-simple'}'>
+          <div class='book-details'>
+            <p class='book-name'>${book.name}</p>
+            ${showDetails ? `
+              <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
+              <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
+            ` : ''}
+          </div>
+          ${deleteButton}
         </div>
       `;
     }
@@ -336,7 +515,6 @@ function displayBooks() {
             <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
             <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
           </div>
-          ${deleteButton}
         </div>
       `;
     }
@@ -346,7 +524,6 @@ function displayBooks() {
         <div class='book-details'>
           <p class='book-name'>${book.name}</p>
         </div>
-        ${deleteButton}
       </div>
     `;
   }).join('');
@@ -360,6 +537,11 @@ function toggleSortBy() {
 
 function toggleDeleteMode() {
   deleteMode = !deleteMode;
+  const deleteBtn = document.getElementById('deleteBtn');
+  deleteBtn.textContent = deleteMode ? '🗑️ Done Deleting' : '🗑️ Delete';
+  deleteBtn.style.background = deleteMode
+    ? 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)'
+    : '';
   displayBooks();
 }
 
@@ -480,7 +662,10 @@ function searchBooks() {
 
   const resultsDiv = document.getElementById('searchResults');
   if (query === '') { resultsDiv.innerHTML = ''; return; }
-  if (results.length === 0) { resultsDiv.innerHTML = '<p class="empty-message">No books found</p>'; return; }
+  if (results.length === 0) {
+    resultsDiv.innerHTML = '<p class="empty-message">No books found</p>';
+    return;
+  }
 
   resultsDiv.innerHTML = '<div class="search-title">Search Results:</div>' + results.map(book => `
     <div class='book-item'>
@@ -489,7 +674,6 @@ function searchBooks() {
         <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
         <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
       </div>
-      <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
     </div>
   `).join('');
 }
@@ -563,9 +747,12 @@ async function deleteBook(id) {
   }
 }
 
+// ── INIT ───────────────────────────────────────────────────
+
 async function init() {
   applyRandomGradient();
   await loadBuyers();
+  await loadBannerMessages();
   await loadBooks();
 }
 
