@@ -4,6 +4,7 @@ const SETTINGS_PASSWORD = 'blacktap';
 
 let allBooks = [];
 let deleteMode = false;
+let editMode = false;
 let sortBy = 'name';
 let showDetails = false;
 let buyersList = [];
@@ -20,8 +21,7 @@ const gradientThemes = [
 
 function applyRandomGradient() {
   const randomIndex = Math.floor(Math.random() * gradientThemes.length);
-  const selectedGradient = gradientThemes[randomIndex];
-  document.body.style.background = selectedGradient;
+  document.body.style.background = gradientThemes[randomIndex];
 }
 
 function formatDate(dateString) {
@@ -51,42 +51,34 @@ async function loadBuyers() {
 function updateBuyersDropdown() {
   const dropdown = document.getElementById('boughtByDropdown');
   const currentValue = dropdown.value;
-  
   dropdown.innerHTML = '<option value="">Select someone...</option>';
-  
   buyersList.forEach(buyer => {
     const option = document.createElement('option');
     option.value = buyer.name;
     option.textContent = buyer.name;
     dropdown.appendChild(option);
   });
-  
   const otherOption = document.createElement('option');
   otherOption.value = 'Other';
   otherOption.textContent = 'Other';
   dropdown.appendChild(otherOption);
-  
   dropdown.value = currentValue;
 }
 
 function updateBulkBuyersDropdown() {
   const dropdown = document.getElementById('bulkBoughtByDropdown');
   const currentValue = dropdown.value;
-  
   dropdown.innerHTML = '<option value="">Select someone...</option>';
-  
   buyersList.forEach(buyer => {
     const option = document.createElement('option');
     option.value = buyer.name;
     option.textContent = buyer.name;
     dropdown.appendChild(option);
   });
-  
   const otherOption = document.createElement('option');
   otherOption.value = 'Other';
   otherOption.textContent = 'Other';
   dropdown.appendChild(otherOption);
-  
   dropdown.value = currentValue;
 }
 
@@ -114,18 +106,12 @@ function unlockSettings() {
 async function addBuyer() {
   const input = document.getElementById('newBuyerInput');
   const name = input.value.trim();
-  
-  if (!name) {
-    alert('Please enter a name');
-    return;
-  }
-  
+  if (!name) { alert('Please enter a name'); return; }
   if (buyersList.some(b => b.name.toLowerCase() === name.toLowerCase())) {
     alert('This name already exists');
     input.value = '';
     return;
   }
-  
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/buyers`, {
       method: 'POST',
@@ -136,7 +122,6 @@ async function addBuyer() {
       },
       body: JSON.stringify({ name: name })
     });
-
     if (response.ok) {
       const newBuyer = await response.json();
       buyersList.push({ id: newBuyer[0].id, name: newBuyer[0].name });
@@ -163,7 +148,6 @@ async function removeBuyer(id, name) {
           'Authorization': `Bearer ${SUPABASE_KEY}`
         }
       });
-
       if (response.ok) {
         buyersList = buyersList.filter(b => b.id !== id);
         updateBuyersDropdown();
@@ -182,7 +166,6 @@ async function removeBuyer(id, name) {
 function toggleSettings() {
   const settingsSection = document.getElementById('settingsSection');
   const isHidden = settingsSection.style.display === 'none';
-  
   if (isHidden) {
     settingsSection.style.display = 'block';
     document.querySelector('.settings-password').style.display = 'flex';
@@ -201,6 +184,98 @@ function toggleDetails() {
   displayBooks();
 }
 
+// ── EDIT MODE ──────────────────────────────────────────────
+
+function toggleEditMode() {
+  editMode = !editMode;
+  const editBtn = document.getElementById('editBtn');
+  editBtn.textContent = editMode ? '✏️ Done Editing' : '✏️ Edit';
+  editBtn.style.background = editMode
+    ? 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)'
+    : '';
+
+  // Edit mode always shows details so buyer info is visible
+  if (editMode && !showDetails) {
+    showDetails = true;
+    document.getElementById('detailsBtn').textContent = '👁️ Hide Details';
+  }
+
+  displayBooks();
+}
+
+function buildBuyerDropdownHTML(bookId, currentBuyer) {
+  let options = '<option value="">Not set</option>';
+  buyersList.forEach(buyer => {
+    const selected = buyer.name === currentBuyer ? 'selected' : '';
+    options += `<option value="${buyer.name}" ${selected}>${buyer.name}</option>`;
+  });
+  const otherSelected = currentBuyer && !buyersList.some(b => b.name === currentBuyer) ? 'selected' : '';
+  options += `<option value="Other" ${otherSelected}>Other...</option>`;
+  return `
+    <div class="edit-buyer-row">
+      <select class="edit-buyer-select" id="editSelect_${bookId}" onchange="handleEditSelectChange(${bookId})">
+        ${options}
+      </select>
+      <input type="text" class="edit-buyer-custom" id="editCustom_${bookId}"
+        placeholder="Enter name..."
+        value="${otherSelected ? currentBuyer || '' : ''}"
+        style="display: ${otherSelected ? 'block' : 'none'};" />
+      <button class="save-edit-btn" onclick="saveBookEdit(${bookId})">💾 Save</button>
+    </div>
+  `;
+}
+
+function handleEditSelectChange(bookId) {
+  const select = document.getElementById(`editSelect_${bookId}`);
+  const customInput = document.getElementById(`editCustom_${bookId}`);
+  if (select.value === 'Other') {
+    customInput.style.display = 'block';
+    customInput.focus();
+  } else {
+    customInput.style.display = 'none';
+    customInput.value = '';
+  }
+}
+
+async function saveBookEdit(bookId) {
+  const select = document.getElementById(`editSelect_${bookId}`);
+  const customInput = document.getElementById(`editCustom_${bookId}`);
+
+  let boughtBy = null;
+  if (select.value === 'Other') {
+    boughtBy = customInput.value.trim() || null;
+  } else if (select.value !== '') {
+    boughtBy = select.value;
+  }
+
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/books?id=eq.${bookId}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({ bought_by: boughtBy })
+    });
+
+    if (response.ok) {
+      // Update local data so the list reflects the change immediately
+      const book = allBooks.find(b => b.id === bookId);
+      if (book) book.bought_by = boughtBy;
+      displayBooks();
+    } else {
+      alert('Error saving — please try again');
+    }
+  } catch (error) {
+    console.error('Error saving book edit:', error);
+    alert('Error saving');
+  }
+}
+
+// ── DISPLAY ────────────────────────────────────────────────
+
 async function loadBooks() {
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/books?order=name.asc`, {
@@ -217,55 +292,69 @@ async function loadBooks() {
 }
 
 function sortBooks(books) {
-  const displayBooks = books.filter(b => !b.name.includes('Keep-alive'));
-  
+  const filtered = books.filter(b => !b.name.includes('Keep-alive'));
   if (sortBy === 'date') {
-    return displayBooks.sort((a, b) => {
+    return filtered.sort((a, b) => {
       const dateA = new Date(a.date_added || '1900-01-01');
       const dateB = new Date(b.date_added || '1900-01-01');
       return dateB - dateA;
     });
   }
-  
-  return displayBooks.sort((a, b) => a.name.localeCompare(b.name));
+  return filtered.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function displayBooks() {
   const list = document.getElementById('bookList');
-  const displayBooks = sortBooks(allBooks);
+  const books = sortBooks(allBooks);
 
-  if (displayBooks.length === 0) {
+  if (books.length === 0) {
     list.innerHTML = '<p class="empty-message">No books yet. Add one to get started!</p>';
     return;
   }
 
-  if (showDetails) {
-    list.innerHTML = displayBooks.map(book => `
-      <div class='book-item'>
-        <div class='book-details'>
-          <p class='book-name'>${book.name}</p>
-          <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
-          <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
+  list.innerHTML = books.map(book => {
+    const deleteButton = `<button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>`;
+
+    if (editMode) {
+      return `
+        <div class='book-item'>
+          <div class='book-details'>
+            <p class='book-name'>${book.name}</p>
+            <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
+            <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
+            ${buildBuyerDropdownHTML(book.id, book.bought_by)}
+          </div>
         </div>
-        <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
-      </div>
-    `).join('');
-  } else {
-    list.innerHTML = displayBooks.map(book => `
+      `;
+    }
+
+    if (showDetails) {
+      return `
+        <div class='book-item'>
+          <div class='book-details'>
+            <p class='book-name'>${book.name}</p>
+            <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
+            <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
+          </div>
+          ${deleteButton}
+        </div>
+      `;
+    }
+
+    return `
       <div class='book-item book-item-simple'>
         <div class='book-details'>
           <p class='book-name'>${book.name}</p>
         </div>
-        <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
+        ${deleteButton}
       </div>
-    `).join('');
-  }
+    `;
+  }).join('');
 }
 
 function toggleSortBy() {
   sortBy = sortBy === 'name' ? 'date' : 'name';
-  const sortBtn = document.getElementById('sortBtn');
-  sortBtn.textContent = sortBy === 'date' ? '📅 Sort by Name' : '📅 Sort by Date';
+  document.getElementById('sortBtn').textContent = sortBy === 'date' ? '📅 Sort by Name' : '📅 Sort by Date';
   displayBooks();
 }
 
@@ -277,7 +366,6 @@ function toggleDeleteMode() {
 function toggleSearch() {
   const searchSection = document.getElementById('searchSection');
   const isHidden = searchSection.style.display === 'none';
-  
   if (isHidden) {
     searchSection.style.display = 'block';
     document.getElementById('searchInput').focus();
@@ -292,7 +380,6 @@ function toggleBulkMode() {
   const bulkSection = document.getElementById('bulkSection');
   const bulkButtons = document.querySelector('.bulk-buttons');
   const isHidden = bulkSection.style.display === 'none';
-  
   if (isHidden) {
     bulkSection.style.display = 'block';
     bulkButtons.classList.add('show');
@@ -310,7 +397,6 @@ function toggleBulkMode() {
 function handleBoughtByChange() {
   const dropdown = document.getElementById('boughtByDropdown');
   const customInput = document.getElementById('customBoughtByInput');
-  
   if (dropdown.value === 'Other') {
     customInput.style.display = 'block';
     customInput.focus();
@@ -323,7 +409,6 @@ function handleBoughtByChange() {
 function handleBulkBoughtByChange() {
   const dropdown = document.getElementById('bulkBoughtByDropdown');
   const customInput = document.getElementById('bulkCustomBoughtByInput');
-  
   if (dropdown.value === 'Other') {
     customInput.style.display = 'block';
     customInput.focus();
@@ -336,25 +421,13 @@ function handleBulkBoughtByChange() {
 async function addBulkBooks() {
   const textarea = document.getElementById('bulkBooksTextarea');
   const text = textarea.value;
-  
-  if (!text.trim()) {
-    alert('Please enter at least one book name');
-    return;
-  }
+  if (!text.trim()) { alert('Please enter at least one book name'); return; }
 
-  const bookNames = text
-    .split('\n')
-    .map(name => name.trim())
-    .filter(name => name.length > 0);
-
-  if (bookNames.length === 0) {
-    alert('Please enter at least one book name');
-    return;
-  }
+  const bookNames = text.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+  if (bookNames.length === 0) { alert('Please enter at least one book name'); return; }
 
   const dropdown = document.getElementById('bulkBoughtByDropdown');
   const customInput = document.getElementById('bulkCustomBoughtByInput');
-  
   let boughtBy = null;
   if (dropdown && dropdown.value) {
     if (dropdown.value === 'Other' && customInput.value.trim()) {
@@ -364,16 +437,12 @@ async function addBulkBooks() {
     }
   }
 
-  let added = 0;
-  let skipped = 0;
-
+  let added = 0, skipped = 0;
   for (const bookName of bookNames) {
-    const duplicate = allBooks.some(b => b.name.toLowerCase() === bookName.toLowerCase());
-    if (duplicate) {
+    if (allBooks.some(b => b.name.toLowerCase() === bookName.toLowerCase())) {
       skipped++;
       continue;
     }
-
     const today = new Date().toISOString().split('T')[0];
     try {
       const response = await fetch(`${SUPABASE_URL}/rest/v1/books`, {
@@ -383,25 +452,16 @@ async function addBulkBooks() {
           'Authorization': `Bearer ${SUPABASE_KEY}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
-          name: bookName, 
-          date_added: today,
-          bought_by: boughtBy
-        })
+        body: JSON.stringify({ name: bookName, date_added: today, bought_by: boughtBy })
       });
-
-      if (response.ok) {
-        added++;
-      }
+      if (response.ok) added++;
     } catch (error) {
       console.error('Error adding book:', error);
     }
   }
 
   let message = `Added ${added} book${added !== 1 ? 's' : ''}`;
-  if (skipped > 0) {
-    message += ` (${skipped} already in list)`;
-  }
+  if (skipped > 0) message += ` (${skipped} already in list)`;
   alert(message);
 
   textarea.value = '';
@@ -414,55 +474,32 @@ async function addBulkBooks() {
 
 function searchBooks() {
   const query = document.getElementById('searchInput').value.toLowerCase();
-  const results = allBooks.filter(b => 
-    b.name.toLowerCase().includes(query) && !b.name.includes('Keep-alive')
-  ).sort((a, b) => a.name.localeCompare(b.name));
+  const results = allBooks
+    .filter(b => b.name.toLowerCase().includes(query) && !b.name.includes('Keep-alive'))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const resultsDiv = document.getElementById('searchResults');
-  if (query === '') {
-    resultsDiv.innerHTML = '';
-    return;
-  }
+  if (query === '') { resultsDiv.innerHTML = ''; return; }
+  if (results.length === 0) { resultsDiv.innerHTML = '<p class="empty-message">No books found</p>'; return; }
 
-  if (results.length === 0) {
-    resultsDiv.innerHTML = '<p class="empty-message">No books found</p>';
-    return;
-  }
-
-  if (showDetails) {
-    resultsDiv.innerHTML = '<div class="search-title">Search Results:</div>' + results.map(book => `
-      <div class='book-item'>
-        <div class='book-details'>
-          <p class='book-name'>${book.name}</p>
-          <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
-          <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
-        </div>
-        <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
+  resultsDiv.innerHTML = '<div class="search-title">Search Results:</div>' + results.map(book => `
+    <div class='book-item'>
+      <div class='book-details'>
+        <p class='book-name'>${book.name}</p>
+        <p class='book-info'><strong>Bought by:</strong> ${book.bought_by || 'Not set'}</p>
+        <p class='book-info'><strong>Date bought:</strong> ${formatDate(book.date_added)}</p>
       </div>
-    `).join('');
-  } else {
-    resultsDiv.innerHTML = '<div class="search-title">Search Results:</div>' + results.map(book => `
-      <div class='book-item book-item-simple'>
-        <div class='book-details'>
-          <p class='book-name'>${book.name}</p>
-        </div>
-        <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
-      </div>
-    `).join('');
-  }
+      <button class='delete-btn' onclick='deleteBook(${book.id})' style='display: ${deleteMode ? "inline-block" : "none"};'>Delete</button>
+    </div>
+  `).join('');
 }
 
 async function addBook() {
   const input = document.getElementById('bookInput');
   const bookName = input.value.trim();
-  
-  if (!bookName) {
-    alert('Please enter a book name');
-    return;
-  }
+  if (!bookName) { alert('Please enter a book name'); return; }
 
-  const duplicate = allBooks.some(b => b.name.toLowerCase() === bookName.toLowerCase());
-  if (duplicate) {
+  if (allBooks.some(b => b.name.toLowerCase() === bookName.toLowerCase())) {
     alert('You already have this book!');
     input.value = '';
     return;
@@ -471,7 +508,6 @@ async function addBook() {
   const today = new Date().toISOString().split('T')[0];
   const dropdown = document.getElementById('boughtByDropdown');
   const customInput = document.getElementById('customBoughtByInput');
-  
   let boughtBy = null;
   if (dropdown && dropdown.value) {
     if (dropdown.value === 'Other' && customInput.value.trim()) {
@@ -489,13 +525,8 @@ async function addBook() {
         'Authorization': `Bearer ${SUPABASE_KEY}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
-        name: bookName,
-        date_added: today,
-        bought_by: boughtBy
-      })
+      body: JSON.stringify({ name: bookName, date_added: today, bought_by: boughtBy })
     });
-
     if (response.ok) {
       input.value = '';
       document.getElementById('boughtByDropdown').value = '';
@@ -512,10 +543,7 @@ async function addBook() {
 }
 
 async function deleteBook(id) {
-  if (!confirm('Are you sure you want to delete this book?')) {
-    return;
-  }
-
+  if (!confirm('Are you sure you want to delete this book?')) return;
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/books?id=eq.${id}`, {
       method: 'DELETE',
@@ -524,7 +552,6 @@ async function deleteBook(id) {
         'Authorization': `Bearer ${SUPABASE_KEY}`
       }
     });
-
     if (response.ok) {
       loadBooks();
     } else {
@@ -536,7 +563,6 @@ async function deleteBook(id) {
   }
 }
 
-// Initialize
 async function init() {
   applyRandomGradient();
   await loadBuyers();
