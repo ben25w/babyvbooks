@@ -410,14 +410,12 @@ button:hover {
   margin-top: -16px;
 }
 
-/* Groups of fields get spacing between them */
 .modal-form-fields {
   display: flex;
   flex-direction: column;
   gap: 28px;
 }
 
-/* Each label + input pair */
 .modal-field {
   display: flex;
   flex-direction: column;
@@ -430,6 +428,7 @@ button:hover {
   text-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
+/* ── FIX: gap between select and buttons ── */
 .modal-add-btn {
   width: 100%;
   padding: 18px;
@@ -437,6 +436,7 @@ button:hover {
   background: linear-gradient(135deg, #ff6b9d 0%, #ffa502 100%);
   box-shadow: 0 6px 20px rgba(255,107,157,0.4);
   border-radius: 14px;
+  margin-top: 12px;
 }
 .modal-add-btn:hover {
   box-shadow: 0 10px 28px rgba(255,107,157,0.55);
@@ -444,6 +444,10 @@ button:hover {
 .modal-bulk-btn {
   background: linear-gradient(135deg, #6b2d9f 0%, #b565d8 100%);
   box-shadow: 0 6px 20px rgba(107,45,159,0.35);
+}
+
+#modalBulkSection .modal-add-btn {
+  margin-top: 12px;
 }
 
 .bulk-divider {
