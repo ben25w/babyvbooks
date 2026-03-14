@@ -162,11 +162,6 @@ button:hover {
   box-shadow: 0 8px 25px rgba(139,79,179,0.45);
 }
 
-/* ── FIX: force gap between any select and the button immediately after it ── */
-select + button {
-  margin-top: 12px;
-}
-
 /* ── SEARCH ── */
 #searchSection {
   margin-bottom: 20px;
@@ -433,6 +428,15 @@ select + button {
   text-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
+/* ── FIX: .modal-add-btn sits outside .modal-form-fields as a sibling ── */
+/* Both #addFormState and #modalBulkSection have this same structure     */
+#addFormState,
+#modalBulkSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .modal-add-btn {
   width: 100%;
   padding: 18px;
@@ -453,7 +457,6 @@ select + button {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-top: 12px;
 }
 .bulk-divider::before,
 .bulk-divider::after {
@@ -478,7 +481,7 @@ select + button {
 #modalBulkSection {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 16px;
 }
 
 /* ── SUCCESS STATE ── */
@@ -494,7 +497,7 @@ select + button {
 }
 .success-buttons {
   display: flex;
-  gap: 15px;
+  gap: 14px;
 }
 .success-buttons button {
   flex: 1;
