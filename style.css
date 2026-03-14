@@ -494,7 +494,7 @@ select + button {
 }
 .success-buttons {
   display: flex;
-  gap: 14px;
+  gap: 15px;
 }
 .success-buttons button {
   flex: 1;
