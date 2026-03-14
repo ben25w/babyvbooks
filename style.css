@@ -41,6 +41,7 @@ body {
   animation: slideDown 0.6s ease-out;
 }
 
+/* ── HEADINGS ── */
 h1 {
   color: #fff;
   text-align: center;
@@ -50,7 +51,6 @@ h1 {
   font-weight: 700;
   animation: fadeIn 0.8s ease-out 0.2s both;
 }
-
 h3 { color: #8b4fb3; font-weight: 700; margin-bottom: 12px; font-size: 1.1em; }
 h4 { color: #666; font-weight: 600; margin-bottom: 10px; font-size: 0.95em; }
 
@@ -65,8 +65,8 @@ h4 { color: #666; font-weight: 600; margin-bottom: 10px; font-size: 0.95em; }
 
 .add-book-main-btn {
   width: 100%;
-  padding: 16px;
-  font-size: 1.1em;
+  padding: 18px;
+  font-size: 1.15em;
   font-weight: 700;
   background: linear-gradient(135deg, #ff6b9d 0%, #ffa502 100%);
   box-shadow: 0 6px 20px rgba(255,107,157,0.4);
@@ -90,7 +90,7 @@ h4 { color: #666; font-weight: 600; margin-bottom: 10px; font-size: 0.95em; }
 /* ── INPUTS ── */
 input[type='text'],
 input[type='password'] {
-  padding: 12px 16px;
+  padding: 14px 16px;
   font-size: 16px;
   border: none;
   border-radius: 12px;
@@ -108,7 +108,7 @@ input[type='password']:focus {
 }
 
 select {
-  padding: 12px 16px;
+  padding: 14px 16px;
   font-size: 16px;
   border: none;
   border-radius: 12px;
@@ -126,13 +126,13 @@ select:focus {
 }
 
 textarea {
-  padding: 14px;
-  font-size: 14px;
+  padding: 14px 16px;
+  font-size: 15px;
   border: none;
   border-radius: 12px;
   width: 100%;
   font-family: 'Poppins', sans-serif;
-  min-height: 140px;
+  min-height: 160px;
   background: rgba(255,255,255,0.95);
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   resize: vertical;
@@ -145,7 +145,7 @@ textarea:focus {
 
 /* ── BUTTONS ── */
 button {
-  padding: 12px 20px;
+  padding: 13px 20px;
   font-size: 15px;
   font-weight: 600;
   background: linear-gradient(135deg, #8b4fb3 0%, #b565d8 100%);
@@ -190,8 +190,8 @@ button:hover {
 .settings-password {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 20px;
+  gap: 12px;
+  padding: 24px;
 }
 .settings-password label {
   color: #8b4fb3;
@@ -204,10 +204,10 @@ button:hover {
 
 .edit-mode-trigger {
   display: block;
-  width: calc(100% - 40px);
-  margin: 20px 20px 0;
+  width: calc(100% - 48px);
+  margin: 24px 24px 0;
   font-size: 1em;
-  padding: 14px 20px;
+  padding: 16px 20px;
   background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
   box-shadow: 0 4px 15px rgba(243,156,18,0.35);
   border-radius: 12px;
@@ -217,7 +217,7 @@ button:hover {
 }
 
 .settings-card {
-  padding: 20px;
+  padding: 24px;
   border-top: 1px solid rgba(139,79,179,0.1);
   margin-top: 20px;
 }
@@ -225,14 +225,14 @@ button:hover {
 .settings-hint {
   color: #888;
   font-size: 0.85em;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .buyer-item {
   background: rgba(248,213,240,0.5);
-  padding: 12px 16px;
+  padding: 13px 16px;
   border-radius: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -256,7 +256,7 @@ button:hover {
 .add-banner-inputs {
   display: flex;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 14px;
   align-items: stretch;
 }
 .add-buyer-inputs input,
@@ -266,7 +266,7 @@ button:hover {
 .add-buyer-inputs button,
 .add-banner-inputs button {
   flex-shrink: 0;
-  padding: 12px 20px;
+  padding: 13px 20px;
   white-space: nowrap;
 }
 
@@ -300,15 +300,15 @@ button:hover {
 
 /* ── EDIT ROW ── */
 .edit-row {
-  margin-top: 12px;
+  margin-top: 14px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   background: rgba(248,213,240,0.35);
-  padding: 14px;
+  padding: 16px;
   border-radius: 10px;
 }
-.edit-field { display: flex; flex-direction: column; gap: 5px; }
+.edit-field { display: flex; flex-direction: column; gap: 6px; }
 .edit-label {
   font-size: 0.78em;
   font-weight: 700;
@@ -320,10 +320,10 @@ button:hover {
 .edit-buyer-custom {
   width: 100%;
   font-size: 14px;
-  padding: 9px 12px;
+  padding: 10px 12px;
 }
 .edit-date-input {
-  padding: 9px 12px;
+  padding: 10px 12px;
   font-size: 14px;
   border: none;
   border-radius: 12px;
@@ -340,7 +340,7 @@ button:hover {
 .save-edit-btn {
   flex: 1;
   background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  padding: 10px 16px;
+  padding: 11px 16px;
   font-size: 13px;
   box-shadow: 0 3px 12px rgba(39,174,96,0.3);
 }
@@ -349,7 +349,7 @@ button:hover {
 .delete-inline-btn {
   flex: 1;
   background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-  padding: 10px 16px;
+  padding: 11px 16px;
   font-size: 13px;
   box-shadow: 0 3px 12px rgba(231,76,60,0.3);
 }
@@ -359,7 +359,7 @@ button:hover {
 .empty-message {
   color: #999;
   font-style: italic;
-  padding: 18px;
+  padding: 20px;
   text-align: center;
   background: rgba(255,255,255,0.7);
   border-radius: 12px;
@@ -381,10 +381,10 @@ button:hover {
   max-width: 600px;
   width: 100%;
   margin: 0 auto;
-  padding: 30px 20px 60px;
+  padding: 40px 24px 80px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 28px;
 }
 
 .modal-back {
@@ -392,7 +392,7 @@ button:hover {
   background: rgba(255,255,255,0.25);
   color: white;
   font-size: 1em;
-  padding: 10px 18px;
+  padding: 11px 20px;
   box-shadow: none;
   border-radius: 12px;
 }
@@ -404,27 +404,29 @@ button:hover {
 
 .modal-title {
   color: white;
-  font-size: 1.9em;
+  font-size: 2em;
   font-weight: 700;
   text-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  margin-top: -10px;
 }
 
 .modal-field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 .modal-field label {
   color: white;
   font-weight: 600;
-  font-size: 0.95em;
+  font-size: 1em;
   text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  margin-top: 6px;
 }
 
 .modal-add-btn {
   width: 100%;
-  padding: 16px;
-  font-size: 1.05em;
+  padding: 18px;
+  font-size: 1.1em;
   background: linear-gradient(135deg, #ff6b9d 0%, #ffa502 100%);
   box-shadow: 0 6px 20px rgba(255,107,157,0.4);
   border-radius: 14px;
@@ -441,6 +443,7 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 14px;
+  margin: 6px 0;
 }
 .bulk-divider::before,
 .bulk-divider::after {
@@ -453,7 +456,7 @@ button:hover {
   background: rgba(255,255,255,0.2);
   color: white;
   font-size: 0.9em;
-  padding: 10px 20px;
+  padding: 11px 22px;
   box-shadow: none;
   white-space: nowrap;
 }
@@ -462,11 +465,18 @@ button:hover {
   box-shadow: none;
 }
 
+#modalBulkSection {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-top: 6px;
+}
+
 /* ── SUCCESS STATE ── */
 .success-message {
   background: rgba(255,255,255,0.95);
   border-radius: 16px;
-  padding: 30px 25px;
+  padding: 36px 28px;
   text-align: center;
   font-size: 1.2em;
   color: #333;
@@ -477,7 +487,11 @@ button:hover {
   display: flex;
   gap: 14px;
 }
-.success-buttons button { flex: 1; padding: 16px; font-size: 1em; }
+.success-buttons button {
+  flex: 1;
+  padding: 16px;
+  font-size: 1em;
+}
 .btn-green {
   background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
   box-shadow: 0 4px 15px rgba(39,174,96,0.35);
@@ -488,7 +502,7 @@ button:hover {
   h1 { font-size: 1.9em; }
   .banner { font-size: 1.3em; padding: 16px; }
   .action-buttons button { flex: 1 1 calc(50% - 5px); }
-  .modal-title { font-size: 1.5em; }
+  .modal-title { font-size: 1.6em; }
   .success-buttons { flex-direction: column; }
   .edit-actions { flex-direction: column; }
 }
