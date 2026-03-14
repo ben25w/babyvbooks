@@ -410,18 +410,17 @@ button:hover {
   margin-top: -16px;
 }
 
-/* Groups of fields get spacing between them */
 .modal-form-fields {
   display: flex;
   flex-direction: column;
   gap: 28px;
 }
 
-/* Each label + input pair */
+/* ── FIX: increased gap spaces select from button ── */
 .modal-field {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 }
 .modal-field label {
   color: white;
@@ -446,12 +445,12 @@ button:hover {
   box-shadow: 0 6px 20px rgba(107,45,159,0.35);
 }
 
+/* ── FIX: gap above bulk divider ── */
 .bulk-divider {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-top: 12px; /* 👈 add this */
-
+  margin-top: 12px;
 }
 .bulk-divider::before,
 .bulk-divider::after {
