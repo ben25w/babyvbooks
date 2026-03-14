@@ -162,6 +162,11 @@ button:hover {
   box-shadow: 0 8px 25px rgba(139,79,179,0.45);
 }
 
+/* ── FIX: force gap between any select and the button immediately after it ── */
+select + button {
+  margin-top: 12px;
+}
+
 /* ── SEARCH ── */
 #searchSection {
   margin-bottom: 20px;
@@ -416,7 +421,6 @@ button:hover {
   gap: 28px;
 }
 
-/* ── FIX: increased gap spaces select from button ── */
 .modal-field {
   display: flex;
   flex-direction: column;
@@ -445,7 +449,6 @@ button:hover {
   box-shadow: 0 6px 20px rgba(107,45,159,0.35);
 }
 
-/* ── FIX: gap above bulk divider ── */
 .bulk-divider {
   display: flex;
   align-items: center;
